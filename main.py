@@ -49,6 +49,10 @@ def main():
         for regex in args.include:
             sources = sources.filtered(regex)
 
+    if not sources.sources:
+        print("No data sources matching the filter")
+        exit(1)
+
     if args.command == "list":
         for source in sources.sources:
             print(source)

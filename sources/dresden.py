@@ -34,8 +34,8 @@ class ParkingDresden(DataSource):
                 parking_places.append({
                     "group_name": parking_group_name,
                     "place_name": parking_place_name,
-                    "num_all": int(row[1]) if row[1] else None,
-                    "num_current": int(row[2]) if row[2] else None,
+                    "num_all": self.int_or_none(row[1]),
+                    "num_current": self.int_or_none(row[2]),
                 })
 
         return parking_places

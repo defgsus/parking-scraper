@@ -3,6 +3,8 @@ import re
 import os
 import hashlib
 
+import bs4
+
 
 class DataSources:
 
@@ -87,3 +89,16 @@ class DataSource:
             return int(x)
         except (ValueError, TypeError):
             return None
+
+    @staticmethod
+    def xml_to_dict(soup):
+        def _iter(soup, obj):
+            for child in soup.children:
+                obj[child.name] = child
+
+        #soup = bs4.BeautifulSoup(soup, parser="xml.parser", features="lxml")
+        data = dict()
+
+        _iter(soup, data)
+
+        return data

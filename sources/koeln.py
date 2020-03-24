@@ -25,10 +25,7 @@ class ParkingKoeln(DataSource):
                     parking_place_name = row[1].text.strip()
 
                     numbers = [img.get("alt") for img in row[0].find_all("img") if img.get("alt").isdigit()]
-                    if numbers:
-                        number = int("".join(numbers))
-                    else:
-                        number = None
+                    number = self.int_or_none("".join(numbers))
 
                     parking_places.append({
                         "group_name": parking_group_name,

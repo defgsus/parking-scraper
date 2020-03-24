@@ -21,8 +21,8 @@ class ParkingUlm(DataSource):
 
                     parking_places.append({
                         "place_name": row[0],
-                        "num_all": int(row[1]) if row[1] else None,
-                        "num_current": int(row[2]) if row[2] else None,
+                        "num_all": self.int_or_none(row[1]),
+                        "num_current": self.int_or_none(row[2]),
                     })
 
         return parking_places
