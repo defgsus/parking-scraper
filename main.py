@@ -30,11 +30,21 @@ def download_source(attributes, use_cache):
     return source.get_data()
 
 
-def download_sources(sources, use_cache):
+def download_sources(sources, use_cache, do_store=False):
+    storage = Storage()
     data = dict()
     for attributes in sources.sources:
-        source_data = download_source(attributes, use_cache=use_cache)
-        data[attributes["source_id"]] = source_data
+        try:
+            timestamp = datetime.datetime.now()
+
+            source_data = download_source(attributes, use_cache=use_cache)
+            data[attributes["source_id"]] = source_data
+
+            if do_store:
+                storage.store(attributes["source_id"], timestamp, data)
+
+        except BaseException as e:
+            print(f"{e.__class__.__name__}: {e}")
 
     return data
 
@@ -62,11 +72,11 @@ def main():
         print(json.dumps(all_data, indent=2))
 
     elif args.command == "store":
-        storage = Storage()
-        timestamp = datetime.datetime.now()
-        all_data = download_sources(sources, use_cache=args.cache)
-        for source_id, data in all_data.items():
-            storage.store(source_id, timestamp, data)
+        download_sources(sources, use_cache=args.cache, do_store=True)
+
+    else:
+        print(f"Unknown command '{args.command}'")
+        exit(2)
 
 
 if __name__ == "__main__":
