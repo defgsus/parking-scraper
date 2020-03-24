@@ -16,4 +16,3 @@ class ParkingUlmUni(DataSource):
         }]
 
         return parking_places
-    

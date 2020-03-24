@@ -9,3 +9,4 @@ from .oldenburg import ParkingOldenburg
 from .paderborn import ParkingPaderborn
 from .ulm import ParkingUlm
 from .ulm_uni import ParkingUlmUni
+from .wiesbaden import ParkingWiesbaden
