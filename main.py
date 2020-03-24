@@ -1,6 +1,7 @@
 import argparse
 import json
 import datetime
+import traceback
 
 from util import DataSources, Storage
 from sources import *
@@ -44,7 +45,7 @@ def download_sources(sources, use_cache, do_store=False):
                 storage.store(attributes["source_id"], timestamp, data)
 
         except BaseException as e:
-            print(f"{e.__class__.__name__}: {e}")
+            print(f"{attributes['source_id']}: {e.__class__.__name__}: {e}\n{traceback.format_exc()}")
 
     return data
 

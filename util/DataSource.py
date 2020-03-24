@@ -55,6 +55,10 @@ class DataSource:
         )
         self.use_cache = use_cache
 
+        self.session.headers = {
+            "User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/74.0"
+        }
+
     def get_data(self):
         raise NotImplementedError
 
