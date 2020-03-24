@@ -19,6 +19,8 @@ class ParkingWiesbaden(DataSource):
             row = [td.text.strip() for td in tr.find_all("td")]
             if row and row[0] == "":
                 numbers = row[2].split("/")
+                if len(numbers) != 2:
+                    numbers = (None, None)
                 parking_places.append({
                     "place_name": row[1],
                     "num_all": self.int_or_none(numbers[1]),

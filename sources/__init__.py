@@ -7,6 +7,7 @@ from .ingolstadt import ParkingIngolstadt
 from .koeln import ParkingKoeln
 from .luebeck import ParkingLuebeck
 from .muenster import ParkingMuenster
+from .nuernberg import ParkingNuernberg
 from .oldenburg import ParkingOldenburg
 from .paderborn import ParkingPaderborn
 from .potsdam import ParkingPotsdam
