@@ -1,10 +1,33 @@
 # already have this in sources/hanau.py, but this url is shorter and nicer
 https://parken-hanau.de/parkleitsystem
 
+# website claims it has number of free spaces, but i did not find them
+https://www.hamburg.de/parken/
+
+# very big database, but *you will not: use any automated service, robot, spider or site retrieval application, device or process as a means to access, copy, index, retrieve, or scrape any Site Content or Site Data in order to construct or populate a search-able index and/or database of business data and/or reviews;*
+https://svg.parkinghq.com/parking_cities
+
+# link zu adac map
+https://www.ludwigsburg.de/start/tourismus/Anreise_Parken.html
+https://www.swlb.de/parken-ludwigsburg
+
+# stuttgart is renewing their system until 2020/07
+https://www.stuttgart.de/verkehrslage
+
 https://www.swt.de/p/Aktuell_freie_Parkpl%C3%A4tze_auf_einen_Blick-5-471.html
-
-
-
-
-
-
+https://web1.karlsruhe.de/service/Parken/
+https://www.einkaufen-regensburg.de/service/parken-amp-anfahrt.html
+https://www.wuerzburg.de/themen/verkehr--mobilitaet/parken-in-wuerzburg/1374.Parkleitsystem-und-Parkplatzbelegung.html
+https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php
+https://www.reutlingen.de/de/Rathaus-Service/Noch-mehr-Service/Anreise,-Parkplaetze-und-Fahrplaene/Parken-in-Reutlingen
+http://www.braunschweig.de/apps/pulp/result/parkhaeuser.geojson
+https://p127393.mittwaldserver.info/LM/_pls/pls.php  # Limburg
+https://www.stadtwerke-baden-baden.de/
+https://www.apag.de/
+https://www.heilbronn.de/umwelt-mobilitaet/mobilitaet/parken/parkhaeuser.html
+https://www.bielefeld.de/de/sv/verkehr/parken/park/
+http://parken.heidelberg.de/
+https://vtmanager.duesseldorf.de/info/?parkquartier#main
+https://www.parken-in-bochum.de/parkhaeuser/
+https://www.esslingen.de/start/es_services/Parkhaeuser.html
+https://www.pls-zh.ch/
