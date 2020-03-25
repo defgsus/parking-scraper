@@ -18,7 +18,6 @@ https://www.stuttgart.de/verkehrslage
 
 https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php  # special javascript conversion
 https://p127393.mittwaldserver.info/LM/_pls/pls.php  # Limburg
-https://www.heilbronn.de/umwelt-mobilitaet/mobilitaet/parken/parkhaeuser.html
 http://parken.heidelberg.de/
 https://vtmanager.duesseldorf.de/info/?parkquartier#main
 https://www.parken-in-bochum.de/parkhaeuser/

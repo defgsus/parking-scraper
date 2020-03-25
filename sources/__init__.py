@@ -8,6 +8,7 @@ from .dortmund import ParkingDortmund
 from .dresden import ParkingDresden
 from .ffh import ParkingFFH
 from .hanau import ParkingHanau
+from .heilbronn import ParkingHeilbronn
 from .ingolstadt import ParkingIngolstadt
 from .karlsruhe import ParkingKarlsruhe
 from .koeln import ParkingKoeln
