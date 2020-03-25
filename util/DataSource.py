@@ -107,12 +107,16 @@ class DataSource:
     @staticmethod
     def int_or_none(x):
         try:
-            return int(x)
+            return int(str(x).lstrip("0"))
         except (ValueError, TypeError):
             return None
 
     def place_name_to_id(self, place_name):
-        place_id = place_name.replace(" ", "-").replace(",", "")
+        place_id = "".join(
+            c for c in place_name
+            if c.isalnum() or c in " \t-"
+        ).replace(" ", "-")
+
         place_id = f"{self.source_id}-{place_id}"
         return place_id
 
