@@ -14,7 +14,7 @@ def parse_args():
 
     parser.add_argument(
         "command", type=str,
-        help="store, dump, list"
+        help="store, dump, test, list, load"
     )
     parser.add_argument(
         "-i", "--include", type=str, nargs="+",
@@ -75,6 +75,49 @@ def download_sources(sources, use_cache, do_store=False):
     return data
 
 
+def load_storage(sources):
+    place_id_to_timestamps = dict()
+
+    storage = Storage()
+    for attributes in sources.sources:
+        source_id = attributes["source_id"]
+
+        files = storage.load_files(source_id)
+        data_source = DataSources.create(source_id)
+
+        for file in files:
+            snapshot_data = file["data"]
+
+            # fix previous storage bug
+            if isinstance(snapshot_data, dict):
+                try:
+                    snapshot_data = snapshot_data[data_source.source_id]
+                except KeyError:
+                    pass
+
+            try:
+                file["canonical_data"] = data_source.transform_snapshot_data(snapshot_data)
+            except BaseException as e:
+                raise ValueError(
+                    f"{data_source.__class__.__name__}.transform_snapshot_data() failed "
+                    f"for timestamp {file['timestamp']}: "
+                    f"{e.__class__.__name__}: {e}\n{traceback.format_exc()}")
+
+            for data in file["canonical_data"]:
+                place_id = data["place_id"]
+                if place_id not in place_id_to_timestamps:
+                    place_id_to_timestamps[place_id] = []
+                place_id_to_timestamps[place_id].append({
+                    "timestamp": file["timestamp"],
+                    "num_free": data["num_free"]
+                })
+
+    for key in sorted(place_id_to_timestamps):
+        print(key)
+        for value in sorted(place_id_to_timestamps[key], key=lambda v: v["timestamp"]):
+            print("  ", value["timestamp"].isoformat(), ":", value["num_free"])
+
+
 def main():
 
     args = parse_args()
@@ -100,6 +143,9 @@ def main():
 
     elif args.command == "store":
         download_sources(sources, use_cache=args.cache, do_store=True)
+
+    elif args.command == "load":
+        load_storage(sources)
 
     else:
         print(f"Unknown command '{args.command}'")

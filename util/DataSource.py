@@ -25,6 +25,11 @@ class DataSources:
         )
         return sources
 
+    @classmethod
+    def create(cls, source_id):
+        """Create a new instance of the derived DataSource class"""
+        return cls._registered_sources[source_id]["class"]()
+
 
 class DataSource:
 
@@ -98,3 +103,23 @@ class DataSource:
             return int(x)
         except (ValueError, TypeError):
             return None
+
+    def place_name_to_id(self, place_name):
+        place_id = place_name.replace(" ", "-").replace(",", "")
+        place_id = f"{self.source_id}-{place_id}"
+        return place_id
+
+    def transform_snapshot_data(self, data):
+        """
+        Return canonical data for previously stored snapshot date retrieved from `get_data`
+        :param data: list
+        :return: list
+        """
+        ret_data = []
+        for entry in data:
+            ret_data.append({
+                "place_id": self.place_name_to_id(entry["place_name"]),
+                "num_free": entry["num_current"]
+            })
+
+        return ret_data

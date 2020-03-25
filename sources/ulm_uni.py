@@ -16,3 +16,13 @@ class ParkingUlmUni(DataSource):
         }]
 
         return parking_places
+
+    def transform_snapshot_data(self, data):
+        ret_data = []
+        for entry in data:
+            ret_data.append({
+                "place_id": self.place_name_to_id("ulm-uni"),
+                "num_free": entry["num_current"],
+            })
+
+        return ret_data

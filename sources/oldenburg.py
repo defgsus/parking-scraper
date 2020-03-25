@@ -16,3 +16,12 @@ class ParkingOldenburg(DataSource):
         data = xmljson.parker.data(fromstring(text))
         return data["Parkhaus"]
 
+    def transform_snapshot_data(self, data):
+        ret_data = []
+        for entry in data:
+            ret_data.append({
+                "place_id": self.place_name_to_id(entry["Name"]),
+                "num_free": entry["Aktuell"],
+            })
+
+        return ret_data

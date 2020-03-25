@@ -41,3 +41,47 @@ class Storage:
         print("writing", long_filename)
         with open(long_filename, "w") as fp:
             json.dump(data, fp, indent=1)
+
+    def find_files(self, source_id, min_timestamp=None):
+        """
+        Find all snapshot files for the given source
+        :param source_id: str, id of source
+        :param min_timestamp: datetime, optional lower limit on timestamps
+        :return: list of dict
+        {
+            "timestamp": datetime   # timestamp of data retrieval
+            "filename": str,        # absolute filename
+        }
+        """
+        path = os.path.join(self.storage_dir, source_id)
+        ret_files = []
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith(".json"):
+                    timestamp = self.filename_to_timestamp(file)
+                    if not min_timestamp or timestamp >= min_timestamp:
+                        ret_files.append({
+                            "filename": os.path.join(root, file),
+                            "timestamp": timestamp,
+                        })
+
+        ret_files.sort(key=lambda f: f["timestamp"])
+        return ret_files
+
+    def load_files(self, source_id, min_timestamp=None):
+        """
+        Load all snapshot files for the given source
+        :param source_id: str, id of source
+        :param min_timestamp: datetime, optional lower limit on timestamps
+        :return: list of dict
+        {
+            "timestamp": datetime   # timestamp of data retrieval
+            "filename": str,        # absolute filename
+            "data": list            # actual data content of snapshot
+        }
+        """
+        files = self.find_files(source_id, min_timestamp=min_timestamp)
+        for file in files:
+            with open(file["filename"]) as fp:
+                file["data"] = json.load(fp)
+        return files
