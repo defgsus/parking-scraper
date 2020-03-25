@@ -17,7 +17,6 @@ https://www.stuttgart.de/verkehrslage
 
 
 https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php  # special javascript conversion
-http://www.braunschweig.de/apps/pulp/result/parkhaeuser.geojson
 https://p127393.mittwaldserver.info/LM/_pls/pls.php  # Limburg
 https://www.stadtwerke-baden-baden.de/
 https://www.apag.de/
