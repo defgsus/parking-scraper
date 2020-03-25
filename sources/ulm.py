@@ -9,8 +9,7 @@ class ParkingUlm(DataSource):
     source_id = "parken-in-ulm"
 
     def get_data(self):
-        text = self.get_url("https://www.parken-in-ulm.de/")
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup("https://www.parken-in-ulm.de/")
 
         parking_places = []
 

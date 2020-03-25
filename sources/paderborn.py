@@ -9,8 +9,7 @@ class ParkingPaderborn(DataSource):
     source_id = "paderborn-parken"
 
     def get_data(self):
-        text = self.get_url("https://www4.paderborn.de/aspparkinfo/default.aspx")
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup("https://www4.paderborn.de/aspparkinfo/default.aspx")
 
         parking_places = []
 

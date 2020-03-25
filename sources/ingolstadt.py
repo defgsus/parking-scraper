@@ -9,8 +9,7 @@ class ParkingIngolstadt(DataSource):
     source_id = "ingolstadt-parken"
 
     def get_data(self):
-        text = self.get_url("https://www.ingolstadt.de/Wirtschaft/parkIN/Derzeit-freie-Parkpl%C3%A4tze")
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup("https://www.ingolstadt.de/Wirtschaft/parkIN/Derzeit-freie-Parkpl%C3%A4tze")
 
         parking_places = []
         div = soup.find("div", {"id": "parkplatzauskunft"})

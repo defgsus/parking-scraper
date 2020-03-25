@@ -9,8 +9,7 @@ class ParkingWiesbaden(DataSource):
     source_id = "wiesbaden-parken"
 
     def get_data(self):
-        text = self.get_url("https://wi.memo-rheinmain.de/wiesbaden/parkliste.phtml?order=carparks")
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup("https://wi.memo-rheinmain.de/wiesbaden/parkliste.phtml?order=carparks")
 
         parking_places = []
 

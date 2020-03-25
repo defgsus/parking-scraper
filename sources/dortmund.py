@@ -10,8 +10,7 @@ class ParkingDortmund(DataSource):
     source_id = "digistadt-dortmund-parken"
 
     def get_data(self):
-        text = self.get_url("https://geoweb1.digistadtdo.de/OWSServiceProxy/client/parken.jsp")
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup("https://geoweb1.digistadtdo.de/OWSServiceProxy/client/parken.jsp")
 
         parking_places = []
 

@@ -10,8 +10,7 @@ class ParkingHanau(DataSource):
     source_id = "hanau-neu-erleben-parken"
 
     def get_data(self):
-        text = self.get_url("http://www.hanau-neu-erleben.de/reise/parken/072752/index.html")
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup("http://www.hanau-neu-erleben.de/reise/parken/072752/index.html")
 
         parking_places = []
 

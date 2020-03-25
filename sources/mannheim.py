@@ -10,8 +10,7 @@ class ParkingMannheim(DataSource):
     web_url = "https://www.parken-mannheim.de/"
 
     def get_data(self):
-        text = self.get_url(self.web_url)
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup(self.web_url)
 
         parking_places = []
 
@@ -28,8 +27,7 @@ class ParkingMannheim(DataSource):
         return parking_places
 
     def get_meta_data_TODO(self):
-        text = self.get_url(self.web_url)
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup(self.web_url)
 
         parking_places = []
 
@@ -37,8 +35,7 @@ class ParkingMannheim(DataSource):
         urls = [a.get("href") for a in div.find_all("a")]
 
         for url in urls:
-            text = self.get_url(self.web_url + url)
-            soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+            soup = self.get_html_soup(self.web_url + url)
 
             park_div = soup.find("div", {"class": "parkhaus-left-ct"})
             place_name = park_div.find("h2").text.strip()

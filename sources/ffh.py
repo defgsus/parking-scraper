@@ -27,8 +27,7 @@ class ParkingFFH(DataSource):
         parking_places = []
 
         for city, url in zip(CITIES, URLS):
-            text = self.get_url(f"https://www.ffh.de/verkehr/parkhaeuser/parkhaus-info-{city}.html")
-            soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+            soup = self.get_html_soup(f"https://www.ffh.de/verkehr/parkhaeuser/parkhaus-info-{city}.html")
 
             table = soup.find("table", {"id": "trafficParkingList"})
             for tr in table.find_all("tr"):

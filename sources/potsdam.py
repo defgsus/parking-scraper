@@ -9,8 +9,7 @@ class ParkingPotsdam(DataSource):
     source_id = "mobil-potsdam-parken"
 
     def get_data(self):
-        text = self.get_url("https://www.mobil-potsdam.de/de/parken/parken-in-potsdam/?no_cache=1")
-        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        soup = self.get_html_soup("https://www.mobil-potsdam.de/de/parken/parken-in-potsdam/?no_cache=1")
 
         parking_places = []
 
