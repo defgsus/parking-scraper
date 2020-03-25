@@ -36,6 +36,8 @@ def download_source(use_cache, do_store, attributes):
         try:
             source = attributes["class"](use_cache=use_cache)
             data = source.get_data()
+            if not data:
+                raise ValueError(f"No data returned from {attributes['class'].__name__}.get_data()")
 
             if do_store:
                 storage.store(attributes["source_id"], timestamp, data)
@@ -91,9 +93,10 @@ def main():
         for source in sources.sources:
             print(source)
 
-    elif args.command == "dump":
+    elif args.command == "dump" or args.command == "test":
         all_data = download_sources(sources, use_cache=args.cache)
-        print(json.dumps(all_data, indent=2))
+        if args.command == "dump":
+            print(json.dumps(all_data, indent=2))
 
     elif args.command == "store":
         download_sources(sources, use_cache=args.cache, do_store=True)
