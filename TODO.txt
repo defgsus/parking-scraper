@@ -19,6 +19,4 @@ https://www.stuttgart.de/verkehrslage
 http://parken.heidelberg.de/
 
 https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php  # special javascript conversion
-https://vtmanager.duesseldorf.de/info/?parkquartier#main
-https://www.esslingen.de/start/es_services/Parkhaeuser.html
 https://www.pls-zh.ch/
