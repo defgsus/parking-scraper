@@ -2,6 +2,8 @@ import argparse
 import json
 import datetime
 import traceback
+from multiprocessing import Pool
+from functools import partial
 
 from util import DataSources, Storage
 from sources import *
@@ -26,39 +28,47 @@ def parse_args():
     return parser.parse_args()
 
 
-def download_source(attributes, use_cache, do_store=False):
+def download_source(use_cache, do_store, attributes):
     storage = Storage()
     timestamp = datetime.datetime.now()
 
     try:
-        source = attributes["class"](use_cache=use_cache)
-        data = source.get_data()
+        try:
+            source = attributes["class"](use_cache=use_cache)
+            data = source.get_data()
 
-        if do_store:
-            storage.store(attributes["source_id"], timestamp, data)
+            if do_store:
+                storage.store(attributes["source_id"], timestamp, data)
+
+            return data
+
+        except BaseException as e:
+            error_str = f"{attributes['source_id']}: {e.__class__.__name__}"
+            traceback_str = traceback.format_exc()
+            print(f"{error_str}\n{traceback_str}")
+
+            if do_store:
+                storage.store(attributes["source_id"], timestamp, {
+                    "error": error_str,
+                    "traceback": traceback_str,
+                }, is_error=True)
 
     except BaseException as e:
-        error_str = f"{attributes['source_id']}: {e.__class__.__name__}"
-        traceback_str = traceback.format_exc()
-        print(f"{error_str}\n{traceback_str}")
-
-        if do_store:
-            storage.store(attributes["source_id"], timestamp, {
-                "error": error_str,
-                "traceback": traceback_str,
-            }, is_error=True)
+        print(f"{attributes['source_id']}: {e.__class__.__name__}: {e}\n{traceback.format_exc()}")
 
 
 def download_sources(sources, use_cache, do_store=False):
 
-    data = dict()
-    for attributes in sources.sources:
-        try:
-            source_data = download_source(attributes, use_cache=use_cache, do_store=do_store)
-            data[attributes["source_id"]] = source_data
+    pool = Pool()
 
-        except BaseException as e:
-            print(f"{attributes['source_id']}: {e.__class__.__name__}: {e}\n{traceback.format_exc()}")
+    source_data_list = pool.map(
+        partial(download_source, use_cache, do_store),
+        sources.sources
+    )
+
+    data = dict()
+    for attributes, result_data in zip(sources.sources, source_data_list):
+        data[attributes["source_id"]] = result_data
 
     return data
 

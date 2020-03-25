@@ -68,7 +68,7 @@ class DataSource:
                 with open(self.get_cache_filename(url)) as fp:
                     return fp.read()
 
-        # print("downloading", url)
+        print("downloading", url)
         response = self.session.get(url)
         text = response.text
 

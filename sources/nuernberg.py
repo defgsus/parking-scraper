@@ -18,7 +18,6 @@ class ParkingNuernberg(DataSource):
                 row = [td.text.strip() for td in tr.find_all("td")]
                 if len(row) > 3 and row[1].startswith("Parkhaus\n"):
 
-                    print(row)
                     place_name = row[1].splitlines()[-1].strip()
 
                     parking_places[place_name] = {
