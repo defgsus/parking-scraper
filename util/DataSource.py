@@ -80,6 +80,11 @@ class DataSource:
 
         return text
 
+    def get_html_soup(self, url):
+        text = self.get_url(url)
+        soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
+        return soup
+
     def get_cache_filename(self, x):
         hash = hashlib.md5(str(x).encode("utf-8")).hexdigest()
         return os.path.join(

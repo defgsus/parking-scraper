@@ -6,6 +6,7 @@ from .ffh import ParkingFFH
 from .hanau import ParkingHanau
 from .ingolstadt import ParkingIngolstadt
 from .koeln import ParkingKoeln
+from .konstanz import ParkingKonstanz
 from .luebeck import ParkingLuebeck
 from .mannheim import ParkingMannheim
 from .muenster import ParkingMuenster
