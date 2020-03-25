@@ -8,9 +8,10 @@ from util import DataSource
 class ParkingLuebeck(DataSource):
 
     source_id = "parken-luebeck"
+    web_url = "https://www.parken-luebeck.de/parkmoeglichkeiten.html"
 
     def get_data(self):
-        text = self.get_url("https://www.parken-luebeck.de/parkmoeglichkeiten.html")
+        text = self.get_url(self.web_url)
 
         search_str = "var parkingData = JSON.parse('"
         idx = text.index(search_str)
@@ -21,7 +22,7 @@ class ParkingLuebeck(DataSource):
         text = text[:text.index("');")]
         text = ast.literal_eval('"'+text+'"')
         full_data = json.loads(text)
-
+        
         parking_places = []
         for space in full_data.values():
             parking_places.append({
@@ -33,3 +34,13 @@ class ParkingLuebeck(DataSource):
             })
 
         return parking_places
+
+    def transform_snapshot_data(self, data):
+        ret_data = []
+        for entry in data:
+            ret_data.append({
+                "place_id": self.place_name_to_id(entry["place_name"] + "-" + entry["id"]),
+                "num_free": entry["num_current"]
+            })
+
+        return ret_data
