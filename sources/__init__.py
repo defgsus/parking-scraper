@@ -12,6 +12,7 @@ from .mannheim import ParkingMannheim
 from .muenster import ParkingMuenster
 from .nuernberg import ParkingNuernberg
 from .oldenburg import ParkingOldenburg
+from .osnabrueck import ParkingOsnabrueck
 from .paderborn import ParkingPaderborn
 from .potsdam import ParkingPotsdam
 from .ulm import ParkingUlm
