@@ -15,11 +15,11 @@ https://www.swlb.de/parken-ludwigsburg
 # stuttgart is renewing their system until 2020/07
 https://www.stuttgart.de/verkehrslage
 
+# they block the request to the data somehow, DataSource file exists already
+http://parken.heidelberg.de/
 
 https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php  # special javascript conversion
 https://p127393.mittwaldserver.info/LM/_pls/pls.php  # Limburg
-http://parken.heidelberg.de/
 https://vtmanager.duesseldorf.de/info/?parkquartier#main
-https://www.parken-in-bochum.de/parkhaeuser/
 https://www.esslingen.de/start/es_services/Parkhaeuser.html
 https://www.pls-zh.ch/

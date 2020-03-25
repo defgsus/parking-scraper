@@ -1,6 +1,7 @@
 from .apag import ParkingApag
 from .baden_baden import ParkingBadenBaden
 from .bielefeld import ParkingBielefeld
+from .bochum import ParkingBochum
 from .bonn import ParkingBonn
 from .braunschweig import ParkingBraunschweig
 from .bremen import ParkingBremen
@@ -8,6 +9,7 @@ from .dortmund import ParkingDortmund
 from .dresden import ParkingDresden
 from .ffh import ParkingFFH
 from .hanau import ParkingHanau
+# from .heidelberg import ParkingHeidelberg
 from .heilbronn import ParkingHeilbronn
 from .ingolstadt import ParkingIngolstadt
 from .karlsruhe import ParkingKarlsruhe
