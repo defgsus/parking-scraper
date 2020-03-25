@@ -15,6 +15,7 @@ from .oldenburg import ParkingOldenburg
 from .osnabrueck import ParkingOsnabrueck
 from .paderborn import ParkingPaderborn
 from .potsdam import ParkingPotsdam
+from .trier import ParkingTrier
 from .ulm import ParkingUlm
 from .ulm_uni import ParkingUlmUni
 from .wiesbaden import ParkingWiesbaden

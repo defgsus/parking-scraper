@@ -14,7 +14,6 @@ https://www.swlb.de/parken-ludwigsburg
 # stuttgart is renewing their system until 2020/07
 https://www.stuttgart.de/verkehrslage
 
-https://www.swt.de/p/Aktuell_freie_Parkpl%C3%A4tze_auf_einen_Blick-5-471.html
 https://web1.karlsruhe.de/service/Parken/
 https://www.einkaufen-regensburg.de/service/parken-amp-anfahrt.html
 https://www.wuerzburg.de/themen/verkehr--mobilitaet/parken-in-wuerzburg/1374.Parkleitsystem-und-Parkplatzbelegung.html

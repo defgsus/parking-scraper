@@ -2,6 +2,9 @@ import requests
 import re
 import os
 import hashlib
+from xml.etree.ElementTree import fromstring
+
+import xmljson
 
 import bs4
 
@@ -89,6 +92,10 @@ class DataSource:
         text = self.get_url(url)
         soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
         return soup
+
+    def get_xml_data(self, url):
+        markup = self.get_url("https://www.swt.de/parken-v2.xml")
+        return xmljson.parker.data(fromstring(markup))
 
     def get_cache_filename(self, x):
         hash = hashlib.md5(str(x).encode("utf-8")).hexdigest()
