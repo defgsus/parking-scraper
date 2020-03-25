@@ -1,4 +1,5 @@
 from .baden_baden import ParkingBadenBaden
+from .bielefeld import ParkingBielefeld
 from .bonn import ParkingBonn
 from .braunschweig import ParkingBraunschweig
 from .bremen import ParkingBremen

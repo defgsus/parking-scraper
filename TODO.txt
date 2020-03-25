@@ -20,7 +20,6 @@ https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php  # special java
 https://p127393.mittwaldserver.info/LM/_pls/pls.php  # Limburg
 https://www.apag.de/
 https://www.heilbronn.de/umwelt-mobilitaet/mobilitaet/parken/parkhaeuser.html
-https://www.bielefeld.de/de/sv/verkehr/parken/park/
 http://parken.heidelberg.de/
 https://vtmanager.duesseldorf.de/info/?parkquartier#main
 https://www.parken-in-bochum.de/parkhaeuser/
