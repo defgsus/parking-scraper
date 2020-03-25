@@ -14,7 +14,7 @@ def parse_args():
 
     parser.add_argument(
         "command", type=str,
-        help="store, dump, test, list, load"
+        help="store, dump, test, list, load, list-spaces"
     )
     parser.add_argument(
         "-i", "--include", type=str, nargs="+",
@@ -112,10 +112,31 @@ def load_storage(sources):
                     "num_free": data["num_free"]
                 })
 
+    return place_id_to_timestamps
+
+
+def dump_place_id_to_timestamps(place_id_to_timestamps):
     for key in sorted(place_id_to_timestamps):
         print(key)
         for value in sorted(place_id_to_timestamps[key], key=lambda v: v["timestamp"]):
             print("  ", value["timestamp"].isoformat(), ":", value["num_free"])
+
+
+def dump_places(place_id_to_timestamps):
+    max_place_id_length = max(len(place_id) for place_id in place_id_to_timestamps)
+
+    for place_id in sorted(place_id_to_timestamps):
+        timestamps = place_id_to_timestamps[place_id]
+
+        num_changes = 0
+        last_num_free = "---"
+        for timestamp in timestamps:
+            if timestamp["num_free"] != last_num_free:
+                last_num_free = timestamp["num_free"]
+                num_changes += 1
+
+        print(f"{place_id:{max_place_id_length}} {len(timestamps):5} snapshots / {num_changes:5} changes")
+    print(f"num places: {len(place_id_to_timestamps)}")
 
 
 def main():
@@ -145,7 +166,12 @@ def main():
         download_sources(sources, use_cache=args.cache, do_store=True)
 
     elif args.command == "load":
-        load_storage(sources)
+        place_id_to_timestamps = load_storage(sources)
+        dump_place_id_to_timestamps(place_id_to_timestamps)
+
+    elif args.command == "list-places":
+        place_id_to_timestamps = load_storage(sources)
+        dump_places(place_id_to_timestamps)
 
     else:
         print(f"Unknown command '{args.command}'")
