@@ -94,7 +94,7 @@ class DataSource:
         return soup
 
     def get_xml_data(self, url):
-        markup = self.get_url("https://www.swt.de/parken-v2.xml")
+        markup = self.get_url(url)
         return xmljson.parker.data(fromstring(markup))
 
     def get_cache_filename(self, x):
