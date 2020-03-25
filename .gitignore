@@ -1,6 +1,7 @@
 get_server_files.sh
 cache/
 snapshots/
+errors/
 
 *credentials*
 *confidential*

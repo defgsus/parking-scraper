@@ -26,23 +26,36 @@ def parse_args():
     return parser.parse_args()
 
 
-def download_source(attributes, use_cache):
-    source = attributes["class"](use_cache=use_cache)
-    return source.get_data()
+def download_source(attributes, use_cache, do_store=False):
+    storage = Storage()
+    timestamp = datetime.datetime.now()
+
+    try:
+        source = attributes["class"](use_cache=use_cache)
+        data = source.get_data()
+
+        if do_store:
+            storage.store(attributes["source_id"], timestamp, data)
+
+    except BaseException as e:
+        error_str = f"{attributes['source_id']}: {e.__class__.__name__}"
+        traceback_str = traceback.format_exc()
+        print(f"{error_str}\n{traceback_str}")
+
+        if do_store:
+            storage.store(attributes["source_id"], timestamp, {
+                "error": error_str,
+                "traceback": traceback_str,
+            }, is_error=True)
 
 
 def download_sources(sources, use_cache, do_store=False):
-    storage = Storage()
+
     data = dict()
     for attributes in sources.sources:
         try:
-            timestamp = datetime.datetime.now()
-
-            source_data = download_source(attributes, use_cache=use_cache)
+            source_data = download_source(attributes, use_cache=use_cache, do_store=do_store)
             data[attributes["source_id"]] = source_data
-
-            if do_store:
-                storage.store(attributes["source_id"], timestamp, data)
 
         except BaseException as e:
             print(f"{attributes['source_id']}: {e.__class__.__name__}: {e}\n{traceback.format_exc()}")
