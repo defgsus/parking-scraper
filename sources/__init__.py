@@ -16,6 +16,7 @@ from .ingolstadt import ParkingIngolstadt
 from .karlsruhe import ParkingKarlsruhe
 from .koeln import ParkingKoeln
 from .konstanz import ParkingKonstanz
+from .limburg import ParkingLimburg
 from .luebeck import ParkingLuebeck
 from .mannheim import ParkingMannheim
 from .muenster import ParkingMuenster
