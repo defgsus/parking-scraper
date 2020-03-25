@@ -22,7 +22,7 @@ class ParkingLuebeck(DataSource):
         text = text[:text.index("');")]
         text = ast.literal_eval('"'+text+'"')
         full_data = json.loads(text)
-        
+
         parking_places = []
         for space in full_data.values():
             parking_places.append({
