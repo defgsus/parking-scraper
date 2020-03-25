@@ -115,7 +115,7 @@ class DataSource:
         place_id = "".join(
             c for c in place_name
             if c.isalnum() or c in " \t-"
-        ).replace(" ", "-").replace("ß", "ss")
+        ).replace(" ", "-").replace("--", "-").replace("ß", "ss")
 
         place_id = f"{self.source_id}-{place_id}"
         return place_id
