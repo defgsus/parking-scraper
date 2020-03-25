@@ -14,12 +14,13 @@ class ParkingDuesseldorf(DataSource):
     web_url = "https://vtmanager.duesseldorf.de/info/?parkquartier#main"
 
     def get_data(self):
-        response = self.session.post(
+        markup = self.get_url(
             "https://vtmanager.duesseldorf.de/geoserverwfs",
+            method="POST",
             data='<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="feature:Parkhaeuser" srsName="EPSG:900913" xmlns:feature="http://vtmanager.duesseldorf.de/"/></wfs:GetFeature>',
         )
 
-        data = xmljson.parker.data(fromstring(response.text))
+        data = self.xml_to_dict(markup)
 
         parking_places = []
 

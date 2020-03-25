@@ -70,14 +70,14 @@ class DataSource:
     def get_data(self):
         raise NotImplementedError
 
-    def get_url(self, url):
+    def get_url(self, url, method="GET", data=None):
         if self.use_cache:
             if os.path.exists(self.get_cache_filename(url)):
                 with open(self.get_cache_filename(url)) as fp:
                     return fp.read()
 
         print("downloading", url)
-        response = self.session.get(url)
+        response = self.session.request(method, url, data=data)
         text = response.text
 
         if self.use_cache:
@@ -103,6 +103,10 @@ class DataSource:
             self.cache_dir,
             hash,
         )
+
+    @staticmethod
+    def xml_to_dict(markup):
+        return xmljson.parker.data(fromstring(markup))
 
     @staticmethod
     def int_or_none(x):
