@@ -1,5 +1,9 @@
 from .apag import ParkingApag
 from .baden_baden import ParkingBadenBaden
+try:
+    from .bahn import ParkingBahn
+except ImportError:
+    pass
 from .bielefeld import ParkingBielefeld
 from .bochum import ParkingBochum
 from .bonn import ParkingBonn

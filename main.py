@@ -151,7 +151,7 @@ def dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=None):
 
 def dump_places(place_id_to_timestamps, place_id_filters=None):
     max_place_id_length = max(len(place_id) for place_id in place_id_to_timestamps)
-
+    _set = set()
     for place_id in sorted(place_id_to_timestamps):
         if place_id_filters and not place_id_filters.matches(place_id):
             continue
@@ -161,13 +161,14 @@ def dump_places(place_id_to_timestamps, place_id_filters=None):
         num_changes = 0
         last_num_free = "---"
         for timestamp in timestamps:
+            _set.add(repr(timestamp["num_free"]))
             if timestamp["num_free"] != last_num_free:
                 last_num_free = timestamp["num_free"]
                 num_changes += 1
 
         print(f"{place_id:{max_place_id_length}} {len(timestamps):5} snapshots / {num_changes:5} changes")
     print(f"num places: {len(place_id_to_timestamps)}")
-
+    print(sorted(_set))
 
 def main():
 

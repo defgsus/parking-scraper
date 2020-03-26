@@ -2,6 +2,8 @@ import os
 import json
 import datetime
 
+import tqdm
+
 
 class Storage:
 
@@ -70,7 +72,9 @@ class Storage:
 
     def load_files(self, source_id, min_timestamp=None):
         """
-        Load all snapshot files for the given source
+        Load all snapshot files for the given source.
+        Will remove snapshots that can not be loaded / json-parsed.
+
         :param source_id: str, id of source
         :param min_timestamp: datetime, optional lower limit on timestamps
         :return: list of dict
@@ -81,7 +85,14 @@ class Storage:
         }
         """
         files = self.find_files(source_id, min_timestamp=min_timestamp)
-        for file in files:
-            with open(file["filename"]) as fp:
-                file["data"] = json.load(fp)
-        return files
+        out_files = []
+
+        for file in tqdm.tqdm(files):
+            try:
+                with open(file["filename"]) as fp:
+                    file["data"] = json.load(fp)
+                out_files.append(file)
+            except BaseException as e:
+                print(f"error: {file['filename']}: {e.__class__.__name__}: {e}")
+
+        return out_files
