@@ -1,12 +1,16 @@
-import re
 import argparse
 import json
 import datetime
 import traceback
+import csv
+from io import StringIO
 from multiprocessing import Pool
 from functools import partial
+import numpy as np
 
-from util import DataSources, Storage, RegexFilter
+import tqdm
+
+from util import DataSources, Storage, RegexFilter, to_json
 from sources import *
 
 
@@ -15,7 +19,14 @@ def parse_args():
 
     parser.add_argument(
         "command", type=str,
-        help="store, dump, test, list, load, list-spaces"
+        help="""
+        store: make a snapshot and store to disk
+        dump: make a snapshot and just dump as json
+        test: make a snapshot but print nothing except errors
+        list: list all data sources
+        load: load snapshots from disk and print
+        load-stats: load snapshots from disk and print stats
+        """
     )
     parser.add_argument(
         "-i", "--include", type=str, nargs="+",
@@ -23,7 +34,11 @@ def parse_args():
     )
     parser.add_argument(
         "-id", "--include-id", type=str, nargs="+",
-        help="regex to match place_ids - filters output of load, list-spaces, ..",
+        help="regex to match place_ids - filters output of load, load-stats, ..",
+    )
+    parser.add_argument(
+        "-f", "--format", type=str, default="text",
+        help="text, json, csv",
     )
     parser.add_argument(
         "-c", "--cache", type=bool, nargs="?", default=False, const=True,
@@ -100,75 +115,78 @@ def dump_raw_data(data, place_id_filters=None):
     print(json.dumps(data_copy, indent=2))
 
 
-def load_storage(sources):
-    place_id_to_timestamps = dict()
-
-    storage = Storage()
-    for attributes in sources.sources:
-        source_id = attributes["source_id"]
-
-        files = storage.load_files(source_id)
-        data_source = DataSources.create(source_id)
-
-        for file in files:
-            snapshot_data = file["data"]
-
-            # fix previous storage bug
-            if isinstance(snapshot_data, dict):
-                try:
-                    snapshot_data = snapshot_data[data_source.source_id]
-                except KeyError:
-                    pass
-
-            try:
-                file["canonical_data"] = data_source.transform_snapshot_data(snapshot_data)
-            except BaseException as e:
-                raise ValueError(
-                    f"{data_source.__class__.__name__}.transform_snapshot_data() failed "
-                    f"for timestamp {file['timestamp']}: "
-                    f"{e.__class__.__name__}: {e}\n{traceback.format_exc()}")
-
-            for data in file["canonical_data"]:
-                place_id = data["place_id"]
-                if place_id not in place_id_to_timestamps:
-                    place_id_to_timestamps[place_id] = []
-                place_id_to_timestamps[place_id].append({
-                    "timestamp": file["timestamp"],
-                    "num_free": data["num_free"]
-                })
-
-    return place_id_to_timestamps
-
-
-def dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=None):
+def dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=None, format="text"):
+    filtered_data = dict()
     for place_id in sorted(place_id_to_timestamps):
         if place_id_filters and not place_id_filters.matches(place_id):
             continue
-        print(place_id)
-        for value in sorted(place_id_to_timestamps[place_id], key=lambda v: v["timestamp"]):
-            print("  ", value["timestamp"].isoformat(), ":", value["num_free"])
+        filtered_data[place_id] = place_id_to_timestamps[place_id]
+
+    if format == "text":
+        for place_id in sorted(filtered_data):
+            print(place_id)
+            for value in sorted(place_id_to_timestamps[place_id], key=lambda v: v["timestamp"]):
+                print("  ", value["timestamp"].isoformat(), ":", value["num_free"])
+    else:
+        print(to_json(filtered_data))
 
 
-def dump_places(place_id_to_timestamps, place_id_filters=None):
-    max_place_id_length = max(len(place_id) for place_id in place_id_to_timestamps)
-    _set = set()
-    for place_id in sorted(place_id_to_timestamps):
-        if place_id_filters and not place_id_filters.matches(place_id):
+def dump_stats(place_arrays, place_id_filters=None, format="text"):
+    max_place_id_length = max(len(place["place_id"]) for place in place_arrays)
+
+    stats_list = []
+    for place in place_arrays:
+        if place_id_filters and not place_id_filters.matches(place["place_id"]):
             continue
-
-        timestamps = place_id_to_timestamps[place_id]
 
         num_changes = 0
-        last_num_free = "---"
-        for timestamp in timestamps:
-            _set.add(repr(timestamp["num_free"]))
-            if timestamp["num_free"] != last_num_free:
-                last_num_free = timestamp["num_free"]
+        last_value = "---"
+        for value in place["y"]:
+            if value != last_value:
+                last_value = value
                 num_changes += 1
 
-        print(f"{place_id:{max_place_id_length}} {len(timestamps):5} snapshots / {num_changes:5} changes")
-    print(f"num places: {len(place_id_to_timestamps)}")
-    print(sorted(_set))
+        true_y = [v for v in place["y"] if v is not None]
+
+        stats = {
+            "place_id": place["place_id"],
+            "num_timestamps": len(place["x"]),
+            "num_changes": num_changes,
+        }
+
+        for key in ("average", "min", "max", "median", "mean", "std", "var"):
+            if true_y:
+                stats[key] = round(getattr(np, key)(true_y), 1)
+            else:
+                stats[key] = ""
+
+        stats_list.append(stats)
+
+    if format == "text":
+        for place in stats_list:
+            print(
+                f"{place['place_id']:{max_place_id_length}}"
+                f" {place['num_timestamps']:5} snapshots"
+                f" {place['num_changes']:5} changes"
+                f" {place['average']:7} average"
+                f" {place['min']:7} min"
+                f" {place['max']:7} max"
+                f" {place['std']:7} std"
+                f" {place['var']:7} var"
+            )
+        print(f"num places: {len(place_arrays)}")
+
+    elif format == "json":
+        print(to_json(stats_list))
+
+    elif format == "csv":
+        with StringIO() as fp:
+            writer = csv.DictWriter(fp, stats_list[0].keys())
+            writer.writeheader()
+            writer.writerows(stats_list)
+            fp.seek(0)
+            print(fp.read())
+
 
 def main():
 
@@ -202,12 +220,12 @@ def main():
         download_sources(sources, use_cache=args.cache, do_store=True)
 
     elif args.command == "load":
-        place_id_to_timestamps = load_storage(sources)
-        dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=place_id_filters)
+        place_id_to_timestamps = Storage().load_sources(sources)
+        dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=place_id_filters, format=args.format)
 
-    elif args.command == "list-places":
-        place_id_to_timestamps = load_storage(sources)
-        dump_places(place_id_to_timestamps, place_id_filters=place_id_filters)
+    elif args.command == "load-stats":
+        place_arrays = Storage().load_sources_arrays(sources)
+        dump_stats(place_arrays, place_id_filters=place_id_filters, format=args.format)
 
     else:
         print(f"Unknown command '{args.command}'")

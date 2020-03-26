@@ -87,12 +87,66 @@ class Storage:
         files = self.find_files(source_id, min_timestamp=min_timestamp)
         out_files = []
 
-        for file in tqdm.tqdm(files):
+        for file in files:
             try:
                 with open(file["filename"]) as fp:
                     file["data"] = json.load(fp)
                 out_files.append(file)
+
             except BaseException as e:
-                print(f"error: {file['filename']}: {e.__class__.__name__}: {e}")
+                #print(f"error: {file['filename']}: {e.__class__.__name__}: {e}")
+                pass
 
         return out_files
+
+    def load_sources(self, sources, min_timestamp=None):
+        from .DataSource import DataSources
+
+        place_id_to_timestamps = dict()
+
+        for attributes in tqdm.tqdm(sources.sources):
+            source_id = attributes["source_id"]
+
+            files = self.load_files(source_id, min_timestamp=min_timestamp)
+            data_source = DataSources.create(source_id)
+
+            for file in files:
+                snapshot_data = file["data"]
+
+                # fix previous storage bug
+                if isinstance(snapshot_data, dict):
+                    try:
+                        snapshot_data = snapshot_data[data_source.source_id]
+                    except KeyError:
+                        pass
+
+                try:
+                    file["canonical_data"] = data_source.transform_snapshot_data(snapshot_data)
+                except BaseException as e:
+                    raise ValueError(
+                        f"{data_source.__class__.__name__}.transform_snapshot_data() failed "
+                        f"for timestamp {file['timestamp']}: "
+                        f"{e.__class__.__name__}: {e}\n{traceback.format_exc()}")
+
+                for data in file["canonical_data"]:
+                    place_id = data["place_id"]
+                    if place_id not in place_id_to_timestamps:
+                        place_id_to_timestamps[place_id] = []
+                    place_id_to_timestamps[place_id].append({
+                        "timestamp": file["timestamp"],
+                        "num_free": data["num_free"]
+                    })
+
+        return place_id_to_timestamps
+
+    def load_sources_arrays(self, sources, min_timestamp=None):
+        place_timestamps = self.load_sources(sources, min_timestamp=min_timestamp)
+        place_list = []
+        for place_id in sorted(place_timestamps):
+            timestamps = place_timestamps[place_id]
+            place_list.append({
+                "place_id": place_id,
+                "x": [t["timestamp"] for t in timestamps],
+                "y": [t["num_free"] for t in timestamps],
+            })
+        return place_list
