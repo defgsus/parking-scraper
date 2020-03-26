@@ -3,6 +3,8 @@ cache/
 snapshots/
 errors/
 
+.ipynb_checkpoints/
+
 *credentials*
 *confidential*
 scratchpad/
