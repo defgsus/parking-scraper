@@ -21,13 +21,13 @@ URLS = [
 class ParkingFFH(DataSource):
 
     source_id = "ffh-parken"
-
+    web_url = "https://www.ffh.de/verkehr/parkhaeuser/"
     def get_data(self):
 
         parking_places = []
 
         for city, url in zip(CITIES, URLS):
-            soup = self.get_html_soup(f"https://www.ffh.de/verkehr/parkhaeuser/parkhaus-info-{city}.html")
+            soup = self.get_html_soup(f"{self.web_url}parkhaus-info-{city}.html")
 
             table = soup.find("table", {"id": "trafficParkingList"})
             for tr in table.find_all("tr"):

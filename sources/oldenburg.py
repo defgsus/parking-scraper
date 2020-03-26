@@ -9,9 +9,10 @@ from util import DataSource
 class ParkingOldenburg(DataSource):
 
     source_id = "oldenburg-service-parken"
+    web_url = "https://oldenburg-service.de/cros.php"
 
     def get_data(self):
-        text = self.get_url("https://oldenburg-service.de/cros.php")
+        text = self.get_url(self.web_url)
 
         data = xmljson.parker.data(fromstring(text))
         return data["Parkhaus"]
