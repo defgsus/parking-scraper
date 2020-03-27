@@ -18,5 +18,4 @@ https://www.stuttgart.de/verkehrslage
 # they block the request to the data somehow, DataSource file exists already
 http://parken.heidelberg.de/
 
-https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php  # special javascript conversion
 https://www.pls-zh.ch/
