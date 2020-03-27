@@ -7,9 +7,10 @@ from util import DataSource
 class ParkingMuenster(DataSource):
 
     source_id = "stadt-muenster-parken"
+    web_url = "https://www.stadt-muenster.de/index.php?id=10910"
 
     def get_data(self):
-        text = self.get_url("https://www.stadt-muenster.de/index.php?id=10910")
+        text = self.get_url(self.web_url)
         return json.loads(text)
 
     def transform_snapshot_data(self, data):

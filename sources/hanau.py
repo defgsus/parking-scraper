@@ -8,9 +8,10 @@ from util import DataSource
 class ParkingHanau(DataSource):
 
     source_id = "hanau-neu-erleben-parken"
+    web_url = "http://www.hanau-neu-erleben.de/reise/parken/072752/index.html"
 
     def get_data(self):
-        soup = self.get_html_soup("http://www.hanau-neu-erleben.de/reise/parken/072752/index.html")
+        soup = self.get_html_soup(self.web_url)
 
         parking_places = []
 

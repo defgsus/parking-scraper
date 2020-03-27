@@ -7,9 +7,10 @@ from util import DataSource
 class ParkingNuernberg(DataSource):
 
     source_id = "tiefbauamt-nuernberg-parken"
+    web_url = "http://www.tiefbauamt.nuernberg.de/site/parken/parkhausbelegung/parkhaus_belegung.html"
 
     def get_data(self):
-        soup = self.get_html_soup("http://www.tiefbauamt.nuernberg.de/site/parken/parkhausbelegung/parkhaus_belegung.html")
+        soup = self.get_html_soup(self.web_url)
 
         parking_places = dict()
 

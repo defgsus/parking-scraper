@@ -40,7 +40,7 @@ class DataSource:
         super().__init_subclass__()
 
         attributes = dict()
-        for key in ("source_id", ):
+        for key in ("source_id", "web_url"):
             value = getattr(cls, key, None)
             if not value:
                 raise AssertionError(f"Must define class attribute {cls.__name__}.{key}")

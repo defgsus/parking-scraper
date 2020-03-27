@@ -7,9 +7,10 @@ from util import DataSource
 class ParkingBonn(DataSource):
 
     source_id = "bonn-bcp-parken"
+    web_url = "http://www.bcp-bonn.de/"
 
     def get_data(self):
-        data = self.get_xml_data("http://www.bcp-bonn.de/stellplatz/bcpext.xml")
+        data = self.get_xml_data(f"{self.web_url}stellplatz/bcpext.xml")
 
         return data["parkhaus"]
 

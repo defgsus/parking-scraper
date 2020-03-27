@@ -7,9 +7,10 @@ from util import DataSource
 class ParkingPaderborn(DataSource):
 
     source_id = "paderborn-parken"
+    web_url = "https://www4.paderborn.de/aspparkinfo/default.aspx"
 
     def get_data(self):
-        soup = self.get_html_soup("https://www4.paderborn.de/aspparkinfo/default.aspx")
+        soup = self.get_html_soup(self.web_url)
 
         parking_places = []
 
