@@ -20,7 +20,7 @@ class ParkingKonstanz(DataSource):
 
                 parking_places.append({
                     "place_name": row[1],
-                    "num_current": self.int_or_none(row[2]),
+                    "num_free": self.int_or_none(row[2]),
                 })
 
         return parking_places

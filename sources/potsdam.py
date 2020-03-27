@@ -23,7 +23,7 @@ class ParkingPotsdam(DataSource):
 
                     parking_places.append({
                         "place_name": row[1][:len(row[1]) // 2],
-                        "num_current": self.int_or_none(row[2]),
+                        "num_free": self.int_or_none(row[2]),
                         "percent_current": self.int_or_none(row[0].rstrip("%")),
                     })
 

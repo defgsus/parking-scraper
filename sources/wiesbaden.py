@@ -24,7 +24,7 @@ class ParkingWiesbaden(DataSource):
                 parking_places.append({
                     "place_name": row[1],
                     "num_all": self.int_or_none(numbers[1]),
-                    "num_current": self.int_or_none(numbers[0]),
+                    "num_free": self.int_or_none(numbers[0]),
                 })
 
         return parking_places

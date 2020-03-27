@@ -17,7 +17,7 @@ class ParkingHeilbronn(DataSource):
         for a in soup.find_all("a"):
             parking_places.append({
                 "place_name": a.text,
-                "num_current": self.int_or_none(a.parent.parent.parent.parent.text.split()[-1]),
+                "num_free": self.int_or_none(a.parent.parent.parent.parent.text.split()[-1]),
             })
 
         return parking_places

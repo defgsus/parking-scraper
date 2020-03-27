@@ -21,7 +21,7 @@ class ParkingMannheim(DataSource):
             
             parking_places.append({
                 "place_name": row[0],
-                "num_current": self.int_or_none(row[1]),
+                "num_free": self.int_or_none(row[1]),
             })
 
         return parking_places
@@ -50,7 +50,7 @@ class ParkingMannheim(DataSource):
                 parking_places.append({
                     "place_name": place_name,
                     "num_all": self.int_or_none(num_all),
-                    "num_current": self.int_or_none(num_cur),
+                    "num_free": self.int_or_none(num_cur),
                 })
             else:
                 print(num_all)

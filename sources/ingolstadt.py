@@ -22,7 +22,7 @@ class ParkingIngolstadt(DataSource):
             parking_places.append({
                 "place_name": row[1].split("|")[0].strip(),
                 "type": row[1].split("|")[1].strip(),
-                "num_current": self.int_or_none(row[0]),
+                "num_free": self.int_or_none(row[0]),
             })
 
         return parking_places

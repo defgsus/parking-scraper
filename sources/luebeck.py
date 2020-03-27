@@ -29,7 +29,7 @@ class ParkingLuebeck(DataSource):
                 "place_name": space["title"],
                 "id": space["id"],
                 "num_all": self.int_or_none(space["totalSpace"]),
-                "num_current": self.int_or_none(space["free"]),
+                "num_free": self.int_or_none(space["free"]),
                 "status": space["state"],
             })
 
@@ -40,7 +40,7 @@ class ParkingLuebeck(DataSource):
         for entry in data:
             ret_data.append({
                 "place_id": self.place_name_to_id(entry["place_name"] + "-" + entry["id"]),
-                "num_free": entry["num_current"]
+                "num_free": entry.get("num_current") or entry.get("num_free")
             })
 
         return ret_data

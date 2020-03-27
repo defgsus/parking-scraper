@@ -24,7 +24,7 @@ class ParkingEsslingen(DataSource):
             parking_places.append({
                 "place_name": entry["Name"],
                 "num_all": entry["Max"],
-                "num_current": entry["Free"],
+                "num_free": entry["Free"],
             })
 
         return parking_places

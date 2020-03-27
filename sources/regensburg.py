@@ -19,7 +19,7 @@ class ParkingRegensburg(DataSource):
 
             parking_places.append({
                 "place_name": info.find("h3").text,
-                "num_current": self.int_or_none(div.find("p").text.split()[-1]),
+                "num_free": self.int_or_none(div.find("p").text.split()[-1]),
             })
 
         return parking_places

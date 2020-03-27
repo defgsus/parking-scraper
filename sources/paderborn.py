@@ -21,7 +21,7 @@ class ParkingPaderborn(DataSource):
                 parking_places.append({
                     "place_name": row[0],
                     "num_all": self.int_or_none(row[2]),
-                    "num_current": self.int_or_none(row[3]),
+                    "num_free": self.int_or_none(row[3]),
                 })
 
         return parking_places

@@ -42,10 +42,10 @@ class ParkingFFH(DataSource):
 
                     free_places = tds[1].text.strip()
                     try:
-                        num_current = int(free_places)
+                        num_free = int(free_places)
                         status = "open"
                     except (TypeError, ValueError):
-                        num_current = None
+                        num_free = None
                         status = "closed" if "geschlossen" in free_places else None
 
                     sub_table = tds[0].find("table")
@@ -61,7 +61,7 @@ class ParkingFFH(DataSource):
                         "place_name": parking_place_name,
                         "facility_id": facility_id,
                         "num_all": num_all,
-                        "num_current": num_current,
+                        "num_free": num_free,
                         "status": status,
                     })
 
@@ -74,7 +74,7 @@ class ParkingFFH(DataSource):
                 "place_id": self.place_name_to_id(
                     entry["city_name"] + "-" + entry["place_name"]
                 ),
-                "num_free": entry["num_current"]
+                "num_free": entry.get("num_current") or entry.get("num_free")
             })
 
         return ret_data

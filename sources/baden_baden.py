@@ -22,7 +22,7 @@ class ParkingBadenBaden(DataSource):
 
             parking_places.append({
                 "place_name": row[0],
-                "num_current": self.int_or_none(row[1]),
+                "num_free": self.int_or_none(row[1]),
             })
 
         return parking_places

@@ -25,7 +25,7 @@ class ParkingBielefeld(DataSource):
 
                 parking_places.append({
                     "place_name": place_name,
-                    "num_current": self.int_or_none(next_row[1].text.split()[0]),
+                    "num_free": self.int_or_none(next_row[1].text.split()[0]),
                 })
 
         return parking_places

@@ -34,7 +34,7 @@ class ParkingDresden(DataSource):
                     "group_name": parking_group_name,
                     "place_name": parking_place_name,
                     "num_all": self.int_or_none(row[1]),
-                    "num_current": self.int_or_none(row[2]),
+                    "num_free": self.int_or_none(row[2]),
                 })
 
         return parking_places

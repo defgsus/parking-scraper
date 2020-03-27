@@ -22,7 +22,7 @@ class ParkingApag(DataSource):
             for li in div.find_all("li"):
                 parking_places.append({
                     "place_name": "%s %s" % (city_name, li.find("span").find("a").text.strip()),
-                    "num_current": self.int_or_none(li.find("span", {"class": "counter"}).text.split()[0]),
+                    "num_free": self.int_or_none(li.find("span", {"class": "counter"}).text.split()[0]),
                 })
 
         return parking_places

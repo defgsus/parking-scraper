@@ -31,7 +31,7 @@ class ParkingKarlsruhe(DataSource):
             parking_places.append({
                 "place_name": div.find("strong").text,
                 "num_all": num_all,
-                "num_current": num_cur,
+                "num_free": num_cur,
             })
 
         return parking_places

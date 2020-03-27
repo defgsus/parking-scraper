@@ -25,7 +25,7 @@ class ParkingNuernberg(DataSource):
                     parking_places[place_name] = {
                         "place_name": place_name,
                         "num_all": self.int_or_none(row[2]),
-                        "num_current": self.int_or_none(row[3]),
+                        "num_free": self.int_or_none(row[3]),
                     }
 
         return list(parking_places.values())

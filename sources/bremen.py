@@ -22,7 +22,7 @@ class ParkingBremen(DataSource):
                 "place_id": props["id"],
                 "place_name": props["name"],
                 "num_all": props.get("capacity"),
-                "num_current": props.get("free"),
+                "num_free": props.get("free"),
             })
 
         return parking_places

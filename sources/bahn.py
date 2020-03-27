@@ -37,7 +37,7 @@ if BAHN_API_TOKEN:
                 parking_places.append({
                     "place_name": entry["space"]["name"],
                     "num_all": entry["allocation"].get("capacity"),
-                    "num_current": num_cur,
+                    "num_free": num_cur,
 
                 })
             return parking_places

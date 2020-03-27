@@ -25,7 +25,7 @@ class ParkingBochum(DataSource):
 
             parking_places.append({
                 "place_name": div.find("h3").text.strip(),
-                "num_current": num_cur,
+                "num_free": num_cur,
             })
 
         return parking_places

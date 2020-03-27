@@ -29,7 +29,7 @@ class ParkingKoeln(DataSource):
                     parking_places.append({
                         "group_name": parking_group_name,
                         "place_name": parking_place_name,
-                        "num_current": number,
+                        "num_free": number,
                     })
 
         return parking_places

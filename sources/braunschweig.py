@@ -21,7 +21,7 @@ class ParkingBraunschweig(DataSource):
             parking_places.append({
                 "place_name": props["name"],
                 "num_all": props.get("capacity"),
-                "num_current": props.get("free"),
+                "num_free": props.get("free"),
                 "status": props.get("openingState"),
             })
 

@@ -22,7 +22,7 @@ class ParkingReutlingen(DataSource):
 
             parking_places.append({
                 "place_name": match[0][0],
-                "num_current": self.int_or_none(match[0][1]),
+                "num_free": self.int_or_none(match[0][1]),
             })
 
         return parking_places

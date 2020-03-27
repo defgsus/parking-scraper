@@ -23,7 +23,7 @@ class ParkingLimburg(DataSource):
                 parking_places.append({
                     "place_name": row[0],
                     "num_all": self.int_or_none(row[1]),
-                    "num_current": self.int_or_none(row[3]),
+                    "num_free": self.int_or_none(row[3]),
                     "status": {"Offen": "open", "Geschlossen": "closed"}.get(row[5]) or row[5],
                 })
 

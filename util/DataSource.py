@@ -163,9 +163,20 @@ class DataSource:
         """
         ret_data = []
         for entry in data:
+            if "place_name" not in entry:
+                raise KeyError(f"Expecting 'place_name' in {self.__class__.__name__}.transform_snapshot_data() "
+                               f"for entry {entry}")
+            if "num_free" not in entry and "num_current" not in entry:
+                raise KeyError(f"Expecting 'num_free' in {self.__class__.__name__}.transform_snapshot_data() "
+                               f"for entry {entry}")
+
+            num_free = entry.get("num_current")
+            if "num_free" in entry:
+                num_free = entry["num_free"]
+
             ret_data.append({
                 "place_id": self.place_name_to_id(entry["place_name"]),
-                "num_free": entry["num_current"]
+                "num_free": num_free
             })
 
         return ret_data

@@ -13,7 +13,7 @@ class ParkingUlmUni(DataSource):
         text = self.get_url("http://tsu-app.rrooaarr.biz/front/soap.php?counterid=10021")
 
         parking_places = [{
-            "num_current": self.int_or_none(text)
+            "num_free": self.int_or_none(text)
         }]
 
         return parking_places
@@ -23,7 +23,7 @@ class ParkingUlmUni(DataSource):
         for entry in data:
             ret_data.append({
                 "place_id": self.place_name_to_id("ulm-uni"),
-                "num_free": entry["num_current"],
+                "num_free": entry.get("num_current") or entry.get("num_free"),
             })
 
         return ret_data
