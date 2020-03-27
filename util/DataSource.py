@@ -67,6 +67,8 @@ class DataSource:
 
     """
 
+    _re_double_minus = re.compile(r"--+")
+
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__()
 
@@ -101,7 +103,7 @@ class DataSource:
     def get_snapshot_data(self):
         raise NotImplementedError
 
-    def get_url(self, url, method="GET", data=None):
+    def get_url(self, url, method="GET", data=None, encoding=None):
         if self.use_cache:
             if os.path.exists(self.get_cache_filename(url)):
                 with open(self.get_cache_filename(url)) as fp:
@@ -109,7 +111,10 @@ class DataSource:
 
         print("downloading", url)
         response = self.session.request(method, url, data=data)
-        text = response.text
+        if encoding is None:
+            text = response.text
+        else:
+            text = response.content.decode(encoding)
 
         if self.use_cache:
             if not os.path.exists(self.cache_dir):
@@ -148,11 +153,12 @@ class DataSource:
 
     def place_name_to_id(self, place_name):
         place_id = "".join(
-            c for c in place_name
-            if c.isalnum() or c in " \t-"
-        ).replace(" ", "-").replace("--", "-").replace("ß", "ss")
+            c if c.isalnum() or c in " \t" else "-"
+            for c in place_name
+        ).replace(" ", "-").replace("ß", "ss")
 
         place_id = f"{self.source_id}-{place_id}"
+        place_id = self._re_double_minus.sub("-", place_id)
         return place_id
 
     def transform_snapshot_data(self, data):

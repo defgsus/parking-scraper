@@ -18,6 +18,7 @@ class ParkingDuesseldorf(DataSource):
             "https://vtmanager.duesseldorf.de/geoserverwfs",
             method="POST",
             data='<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="feature:Parkhaeuser" srsName="EPSG:900913" xmlns:feature="http://vtmanager.duesseldorf.de/"/></wfs:GetFeature>',
+            encoding="utf-8"
         )
 
         data = self.xml_to_dict(markup)
@@ -29,10 +30,11 @@ class ParkingDuesseldorf(DataSource):
             num_occupied = self.int_or_none(entry.get("{http://vtmanager.duesseldorf.de/}kurzparkerbelegt"))
             num_cur = None
             if num_all is not None and num_occupied is not None:
-                num = num_cur = num_all - num_occupied
+                num_cur = num_all - num_occupied
 
             parking_places.append({
                 "place_name": entry["{http://www.opengis.net/gml}name"],
+                "id": entry["{http://www.opengis.net/gml}name"].split()[0],
                 "num_all": num_all,
                 "num_free": num_cur,
             })
