@@ -9,7 +9,7 @@ class ParkingMannheim(DataSource):
     source_id = "parken-mannheim"
     web_url = "https://www.parken-mannheim.de/"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []

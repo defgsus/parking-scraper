@@ -9,7 +9,7 @@ class ParkingWiesbaden(DataSource):
     source_id = "wiesbaden-parken"
     web_url = "https://www.wiesbaden.de/leben-in-wiesbaden/verkehr/verkehrsinfos/parken.php"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         soup = self.get_html_soup("https://wi.memo-rheinmain.de/wiesbaden/parkliste.phtml?order=carparks")
 
         parking_places = []

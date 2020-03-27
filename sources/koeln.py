@@ -9,7 +9,7 @@ class ParkingKoeln(DataSource):
     source_id = "koeln-apps-parken"
     web_url = "https://www.koeln.de/apps/parken/"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []

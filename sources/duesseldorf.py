@@ -13,7 +13,7 @@ class ParkingDuesseldorf(DataSource):
     source_id = "vtmanager-duesseldorf-parken"
     web_url = "https://vtmanager.duesseldorf.de/info/?parkquartier#main"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         markup = self.get_url(
             "https://vtmanager.duesseldorf.de/geoserverwfs",
             method="POST",

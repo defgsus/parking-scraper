@@ -11,7 +11,7 @@ class ParkingOldenburg(DataSource):
     source_id = "oldenburg-service-parken"
     web_url = "https://oldenburg-service.de/cros.php"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         text = self.get_url(self.web_url)
 
         data = xmljson.parker.data(fromstring(text))

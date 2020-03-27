@@ -9,7 +9,7 @@ class ParkingHeilbronn(DataSource):
     source_id = "heilbronn-parken"
     web_url = "https://www.heilbronn.de/umwelt-mobilitaet/mobilitaet/parken/parkhaeuser.html"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         soup = self.get_html_soup("https://www.heilbronn.de/allgemeine-inhalte/ajax-parkhausbelegung.html?type=1496993343")
 
         parking_places = []

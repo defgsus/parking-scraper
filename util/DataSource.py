@@ -35,6 +35,37 @@ class DataSources:
 
 
 class DataSource:
+    """
+    Base class for all data sources.
+
+    Subclass this class and implement `get_snapshot_data()`.
+
+        The result of get_snapshot_data will be stored to json files.
+        It can return any object, but it must be json compatible
+        and typically the minimal amount of necessary information is enough.
+
+        A generic format is:
+        [
+            {
+                "place_name": str,
+                "num_free": int | None,
+                "status": "open" | "closed",
+                "num_all": int | None,
+            }
+        ]
+
+        `place_name` and `num_free` are required, everything else is optional.
+
+        You can also return unconverted API results, if they are small.
+
+    Also add following class-attributes:
+        source_id: str, the unique identifier for this data source
+        web_url: str, some human-friendly url of the web service, e.g. `https://parken-in-dorf-xy.de/`
+
+    For canonical data export you can override `transform_snapshot_data()` to
+    convert your snapshot data into a generic format
+
+    """
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__()
@@ -67,7 +98,7 @@ class DataSource:
             "User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/74.0"
         }
 
-    def get_data(self):
+    def get_snapshot_data(self):
         raise NotImplementedError
 
     def get_url(self, url, method="GET", data=None):

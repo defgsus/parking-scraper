@@ -9,7 +9,7 @@ class ParkingOsnabrueck(DataSource):
     source_id = "parken-osnabrueck"
     web_url = "https://www.parken-osnabrueck.de/"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         text = self.get_url("https://www.parken-osnabrueck.de/index.php?type=427590&tx_tiopgparkhaeuserosnabrueck_parkingosnabruek[controller]=Parking&tx_tiopgparkhaeuserosnabrueck_parkingosnabruek[action]=ajaxCallGetUtilizationData&_=1585143795975")
 
         return json.loads(text)

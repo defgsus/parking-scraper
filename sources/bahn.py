@@ -16,7 +16,7 @@ if BAHN_API_TOKEN:
         source_id = "bahn-api-parken"
         web_url = "https://api.deutschebahn.com/bahnpark/v1/spaces/occupancies"
 
-        def get_data(self):
+        def get_snapshot_data(self):
 
             self.session.headers.update({
                 "Accept": "application/json;charset=utf-8",

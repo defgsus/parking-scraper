@@ -10,7 +10,7 @@ class ParkingHeidelberg_TODO:  # (DataSource):
     source_id = "heidelberg-parken"
     web_url = "http://parken.heidelberg.de/"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         self.session.headers.update({
             "Accept": "application/json, text/javascript, */*",
             "Host": "parken.heidelberg.de",

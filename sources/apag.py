@@ -9,7 +9,7 @@ class ParkingApag(DataSource):
     source_id = "apag-parken"
     web_url = "https://www.apag.de/"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []

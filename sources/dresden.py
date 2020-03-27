@@ -9,7 +9,7 @@ class ParkingDresden(DataSource):
     source_id = "dresden-parken"
     web_url = "https://www.dresden.de/freie-parkplaetze"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []

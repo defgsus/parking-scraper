@@ -9,7 +9,7 @@ class ParkingBraunschweig(DataSource):
     source_id = "braunschweig-parken"
     web_url = "http://www.braunschweig.de/plan/index.php#parken"
 
-    def get_data(self):
+    def get_snapshot_data(self):
         text = self.get_url("http://www.braunschweig.de/apps/pulp/result/parkhaeuser.geojson")
         geojson = json.loads(text)
 
