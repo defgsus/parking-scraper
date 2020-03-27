@@ -19,6 +19,7 @@ from .hanau import ParkingHanau
 from .heilbronn import ParkingHeilbronn
 from .ingolstadt import ParkingIngolstadt
 from .karlsruhe import ParkingKarlsruhe
+from .kiel import ParkingKiel
 from .koeln import ParkingKoeln
 from .konstanz import ParkingKonstanz
 from .limburg import ParkingLimburg
