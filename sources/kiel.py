@@ -10,7 +10,7 @@ class ParkingKiel(DataSource):
     source_id = "kiel-parken"
     web_url = "https://www.kiel.de/de/umwelt_verkehr/auto/parken_innenstadt.php"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         markup = self.get_url(self.web_url)
 
         array_re = re.compile(r"<fieldset class=\"parkover\">(.*)</fieldset>")

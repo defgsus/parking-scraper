@@ -9,7 +9,7 @@ class ParkingBochum(DataSource):
     source_id = "parken-in-bochum"
     web_url = "https://www.parken-in-bochum.de/parkhaeuser/"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []

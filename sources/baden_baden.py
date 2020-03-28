@@ -9,7 +9,7 @@ class ParkingBadenBaden(DataSource):
     source_id = "baden-baden-parken"
     web_url = "https://www.stadtwerke-baden-baden.de/"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []

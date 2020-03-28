@@ -56,7 +56,7 @@ def download_source(use_cache, do_store, attributes):
     try:
         try:
             source = attributes["class"](use_cache=use_cache)
-            data = source.get_snapshot_data()
+            data = source.download_snapshot_data()
             if not data:
                 raise ValueError(f"No data returned from {attributes['class'].__name__}.get_data()")
 

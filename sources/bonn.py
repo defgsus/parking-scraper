@@ -9,7 +9,7 @@ class ParkingBonn(DataSource):
     source_id = "bonn-bcp-parken"
     web_url = "http://www.bcp-bonn.de/"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         data = self.get_xml_data(f"{self.web_url}stellplatz/bcpext.xml")
 
         return data["parkhaus"]

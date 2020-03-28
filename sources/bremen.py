@@ -9,7 +9,7 @@ class ParkingBremen(DataSource):
     source_id = "vmz-bremen-parken"
     web_url = "https://vmz.bremen.de/parken/parkhaeuser-parkplaetze/"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         text = self.get_url("https://vmz.bremen.de/geojson/parking.geojson")
         geojson = json.loads(text)
 

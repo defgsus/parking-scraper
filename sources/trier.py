@@ -9,7 +9,7 @@ class ParkingTrier(DataSource):
     source_id = "swt-trier-parken"
     web_url = "https://www.swt.de/"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         data = self.get_xml_data(f"{self.web_url}parken-v2.xml")
 
         return data["parkhaus"]

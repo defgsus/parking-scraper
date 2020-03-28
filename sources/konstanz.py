@@ -9,7 +9,7 @@ class ParkingKonstanz(DataSource):
     source_id = "konstanz-parken"
     web_url = "https://www.konstanz.de/leben+in+konstanz/parkleitsystem"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []

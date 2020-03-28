@@ -38,7 +38,7 @@ class DataSource:
     """
     Base class for all data sources.
 
-    Subclass this class and implement `get_snapshot_data()`.
+    Subclass this class and implement `download_snapshot_data()`.
 
         The result of get_snapshot_data will be stored to json files.
         It can return any object, but it must be json compatible
@@ -100,7 +100,7 @@ class DataSource:
             "User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/74.0"
         }
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         raise NotImplementedError
 
     def get_url(self, url, method="GET", data=None, encoding=None):

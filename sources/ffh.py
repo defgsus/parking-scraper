@@ -22,7 +22,7 @@ class ParkingFFH(DataSource):
 
     source_id = "ffh-parken"
     web_url = "https://www.ffh.de/verkehr/parkhaeuser/"
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
 
         parking_places = []
 

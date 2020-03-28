@@ -9,7 +9,7 @@ class ParkingNuernberg(DataSource):
     source_id = "tiefbauamt-nuernberg-parken"
     web_url = "http://www.tiefbauamt.nuernberg.de/site/parken/parkhausbelegung/parkhaus_belegung.html"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = dict()

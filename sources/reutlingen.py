@@ -9,7 +9,7 @@ class ParkingReutlingen(DataSource):
     source_id = "reutlingen-parken"
     web_url = "https://www.reutlingen.de/de/Rathaus-Service/Noch-mehr-Service/Anreise,-Parkplaetze-und-Fahrplaene/Parken-in-Reutlingen"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         soup = self.get_html_soup("https://www.reutlingen.de/parkinfo/list")
 
         parking_places = []

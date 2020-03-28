@@ -9,7 +9,7 @@ class ParkingRegensburg(DataSource):
     source_id = "regensburg-parken"
     web_url = "https://www.einkaufen-regensburg.de/service/parken-amp-anfahrt.html"
 
-    def get_snapshot_data(self):
+    def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
         parking_places = []
