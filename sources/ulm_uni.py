@@ -28,3 +28,14 @@ class ParkingUlmUni(DataSource):
             })
 
         return ret_data
+
+    def transform_meta_data(self, data):
+        ret_data = super().transform_meta_data(None)
+
+        place_id = self.place_name_to_id("ulm-uni")
+        ret_data["places"][place_id] = {
+            "place_id": place_id,
+            "place_name": "Universität",
+        }
+
+        return ret_data

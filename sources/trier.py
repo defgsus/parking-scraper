@@ -24,3 +24,16 @@ class ParkingTrier(DataSource):
             })
 
         return ret_data
+
+    def transform_meta_data(self, data):
+        ret_data = super().transform_meta_data(None)
+
+        for entry in data:
+            place_id = self.place_name_to_id(entry["phname"])
+            ret_data["places"][place_id] = {
+                "place_id": place_id,
+                "place_name": entry["phname"],
+                "num_all": entry["shortmax"],
+            }
+
+        return ret_data

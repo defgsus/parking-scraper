@@ -24,3 +24,16 @@ class ParkingOsnabrueck(DataSource):
             })
 
         return ret_data
+
+    def transform_meta_data(self, data):
+        ret_data = super().transform_meta_data(None)
+
+        for entry in data.values():
+            place_id = self.place_name_to_id(entry["identifier"])
+            ret_data["places"][place_id] = {
+                "place_id": place_id,
+                "place_name": entry["identifier"],
+                "num_all": entry["capacity"],
+            }
+
+        return ret_data

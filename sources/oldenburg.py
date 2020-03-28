@@ -19,11 +19,26 @@ class ParkingOldenburg(DataSource):
         return data["Parkhaus"]
 
     def transform_snapshot_data(self, data):
+        status_mapping = {"Geschlossen": "closed", "Offen": "open"}
         ret_data = []
         for entry in data:
             ret_data.append({
                 "place_id": self.place_name_to_id(entry["Name"]),
                 "num_free": entry["Aktuell"],
+                "status": status_mapping.get(entry["status"]),
             })
+
+        return ret_data
+
+    def transform_meta_data(self, data):
+        ret_data = super().transform_meta_data(None)
+
+        for entry in data:
+            place_id = self.place_name_to_id(entry["Name"])
+            ret_data["places"][place_id] = {
+                "place_id": place_id,
+                "place_name": entry["Name"],
+                "num_all": entry["Gesamt"],
+            }
 
         return ret_data

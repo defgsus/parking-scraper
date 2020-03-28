@@ -22,7 +22,6 @@ class ParkingMuenster(DataSource):
             ret_data.append({
                 "place_id": self.place_name_to_id(props["NAME"]),
                 "num_free": props["parkingFree"],
-                "num_all": props["parkingTotal"],
                 "status": status_mapping.get(props["status"]),
             })
 
