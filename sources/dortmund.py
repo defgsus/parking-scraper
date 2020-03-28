@@ -10,7 +10,7 @@ class ParkingDortmund(DataSource):
     source_id = "digistadt-dortmund-parken"
     web_url = "https://geoweb1.digistadtdo.de/OWSServiceProxy/client/parken.jsp"
     city_name = "Dortmund"
-    
+
     def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
 
