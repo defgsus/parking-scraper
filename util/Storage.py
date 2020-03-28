@@ -181,6 +181,7 @@ class Storage:
 
             if meta_data:
                 canonical_data = data_source.transform_meta_data(meta_data)
+                data_source._make_places_complete(canonical_data["places"].values())
             else:
                 snapshot_files = self.find_files(source_id, min_timestamp)
                 if not snapshot_files:
@@ -188,6 +189,7 @@ class Storage:
                 with open(snapshot_files[-1]["filename"]) as fp:
                     meta_data = json.load(fp)
                     canonical_data = data_source.transform_meta_data(meta_data)
+                    data_source._make_places_complete(canonical_data["places"].values())
 
             source_id_to_meta[source_id] = canonical_data
 

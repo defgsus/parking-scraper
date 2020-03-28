@@ -213,6 +213,7 @@ class DataSource:
                 str: {                          # mapping key is unique id of parking-place
                     "place_id": str,
                     "place_name": str,
+                    "place_url": str,
                     "city_name", str | None,
                     "address": [str,] | None,
                     "coordinates": [float, float] | None,
@@ -224,13 +225,14 @@ class DataSource:
         The base implementation creates the whole dictionary and an initialized `places` dict
         """
         places = dict()
-        if isinstance(data, list):
+        if data and isinstance(data, list):
             for place in data:
                 if isinstance(place, dict) and place.get("place_name"):
                     place_id = self.place_name_to_id(place["place_name"])
                     places[place_id] = {
                         "place_id": place_id,
                         "place_name": place["place_name"],
+                        "place_url": place.get("place_url"),
                         "city_name": place.get("city_name") or getattr(self, "city_name", None),
                         "address": place.get("address"),
                         "coordinates": place.get("coordinates"),
@@ -243,3 +245,13 @@ class DataSource:
             "places": places,
         }
 
+    def _make_places_complete(self, places):
+        for place in places:
+            if not place.get("city_name"):
+                if not getattr(self, "city_name", None):
+                    raise ValueError(f"Need to define class attribute {self.__class__.__name__}.city_name")
+                place["city_name"] = getattr(self, "city_name")
+
+            for key in ("place_url", "address", "coordinates", "num_all"):
+                if not place.get(key):
+                    place[key] = None

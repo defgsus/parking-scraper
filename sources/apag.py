@@ -39,8 +39,8 @@ class ParkingApag(DataSource):
 
             for li in div.find_all("li"):
                 place_link = li.find("span").find("a")
-
-                soup = self.get_html_soup(self.web_url.rstrip("/") + place_link.get("href"))
+                place_url = self.web_url.rstrip("/") + place_link.get("href")
+                soup = self.get_html_soup(place_url)
 
                 elem_total = soup.find("span", {"class": "total"})
                 elem_address = soup.find("div", {"class": "address"})
@@ -54,6 +54,7 @@ class ParkingApag(DataSource):
                 parking_places.append({
                     "city_name": city_name,
                     "place_name": place_link.text.strip(),
+                    "place_url": place_url,
                     "num_all": self.int_or_none(elem_total.text.split()[-1]) if elem_total else None,
                     "address": [i for i in elem_address.text.strip().split("\n") if i],
                     "coordinates": coords,

@@ -40,7 +40,7 @@ class ParkingBochum(DataSource):
 
         for div in soup.find_all("div", {"class": "details"}):
             place_name = div.find("h3").text.strip()
-            
+
             actions = div.find("div", {"class": "actions"}).find_all("a")
 
             address_link = actions[1].get("href")
@@ -51,8 +51,9 @@ class ParkingBochum(DataSource):
 
             num_all = None
 
-            page_link = actions[0].get("href")
-            soup = self.get_html_soup(self.web_url.rstrip("/") + page_link)
+            place_url = actions[0].get("href")
+            place_url = self.web_url.rstrip("/") + place_url
+            soup = self.get_html_soup(place_url)
 
             div = soup.find(text="Stellplätze:")
             if not div:
@@ -62,6 +63,7 @@ class ParkingBochum(DataSource):
 
             parking_places.append({
                 "place_name": place_name,
+                "place_url": place_url,
                 "address": address,
                 "num_all": num_all,
             })
