@@ -5,11 +5,11 @@ from util import DataSource
 
 
 CITIES = [
-    "frankfurt",
-    "wiesbaden",
-    "mannheim",
-    "kassel",
-    "bad-homburg",
+    "Frankfurt",
+    "Wiesbaden",
+    "Mannheim",
+    "Kassel",
+    "Bad-Homburg",
 ]
 
 URLS = [
@@ -27,7 +27,7 @@ class ParkingFFH(DataSource):
         parking_places = []
 
         for city, url in zip(CITIES, URLS):
-            soup = self.get_html_soup(f"{self.web_url}parkhaus-info-{city}.html")
+            soup = self.get_html_soup(f"{self.web_url}parkhaus-info-{city.lower()}.html")
 
             table = soup.find("table", {"id": "trafficParkingList"})
             for tr in table.find_all("tr"):
