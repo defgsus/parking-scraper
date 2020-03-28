@@ -69,7 +69,7 @@ class Storage:
             "filename": str,        # absolute filename
         }
         """
-        path = os.path.join(self.snapshot_dir, source_id)
+        path = os.path.join(self.directories["snapshot"], source_id)
         ret_files = []
         for root, dirs, files in os.walk(path):
             for file in files:
