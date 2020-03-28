@@ -8,6 +8,9 @@ class ParkingBadenBaden(DataSource):
 
     source_id = "baden-baden-parken"
     web_url = "https://www.stadtwerke-baden-baden.de/"
+    city_name = "Baden-Baden"
+
+    # no meta info on this website
 
     def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
