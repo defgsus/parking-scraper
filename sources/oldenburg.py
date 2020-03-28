@@ -25,7 +25,7 @@ class ParkingOldenburg(DataSource):
             ret_data.append({
                 "place_id": self.place_name_to_id(entry["Name"]),
                 "num_free": entry["Aktuell"],
-                "status": status_mapping.get(entry["status"]),
+                "status": status_mapping.get(entry["Status"]),
             })
 
         return ret_data

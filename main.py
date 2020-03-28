@@ -152,7 +152,7 @@ def dump_source_to_meta(source_id_to_meta, format="text"):
         for source_meta in source_id_to_meta.values():
             print("-"*10, source_meta["source_id"])
             for place in source_meta["places"].values():
-                print(f"  {place['city_name']:25} {place['place_name']:50} ({place['place_id']})")
+                print(f"  {place['city_name']:25} {place['place_name']:50} {(place['num_all'] or ''):6} ({place['place_id']})")
 
     elif format == "json":
         print(to_json(source_id_to_meta, indent=2))
