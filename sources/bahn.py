@@ -16,17 +16,18 @@ if BAHN_API_TOKEN:
         source_id = "bahn-api-parken"
         web_url = "https://api.deutschebahn.com/bahnpark/v1/spaces/occupancies"
 
-        def download_snapshot_data(self):
-
+        def download_meta_data(self):
             self.session.headers.update({
                 "Accept": "application/json;charset=utf-8",
                 "Authorization": f"Bearer {BAHN_API_TOKEN}"
             })
             markup = self.get_url(self.web_url)
             data = json.loads(markup)
-            # print(json.dumps(data, indent=2))
 
-            return data["allocations"]
+            return data
+
+        def download_snapshot_data(self):
+            data = self.download_meta_data()
 
             parking_places = []
             for entry in data["allocations"]:
