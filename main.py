@@ -21,7 +21,9 @@ def parse_args():
         "command", type=str,
         help="""
         store: make a snapshot and store to disk
-        dump: make a snapshot and just dump as json
+        store-meta: make a snapshot of meta data and store to disk
+        dump: make a snapshot and dump as json
+        dump-meta: make a snapshot of meta data and dump as json
         test: make a snapshot but print nothing except errors
         list: list all data sources
         load: load snapshots from disk and print
@@ -49,19 +51,22 @@ def parse_args():
     return parser.parse_args()
 
 
-def download_source(use_cache, do_store, attributes):
+def download_source(use_cache, do_store, type, attributes):
     storage = Storage()
     timestamp = datetime.datetime.now()
 
     try:
         try:
             source = attributes["class"](use_cache=use_cache)
-            data = source.download_snapshot_data()
-            if not data:
-                raise ValueError(f"No data returned from {attributes['class'].__name__}.get_data()")
+            if type == "meta":
+                data = source.download_meta_data()
+            else:
+                data = source.download_snapshot_data()
+                if not data:
+                    raise ValueError(f"No data returned from {attributes['class'].__name__}.download_{type}_data()")
 
-            if do_store:
-                storage.store(attributes["source_id"], timestamp, data)
+            if do_store and data:
+                storage.store(attributes["source_id"], timestamp, data, type)
 
             return data
 
@@ -71,21 +76,26 @@ def download_source(use_cache, do_store, attributes):
             print(f"{error_str}\n{traceback_str}")
 
             if do_store:
-                storage.store(attributes["source_id"], timestamp, {
-                    "error": error_str,
-                    "traceback": traceback_str,
-                }, is_error=True)
+                storage.store(
+                    attributes["source_id"],
+                    timestamp,
+                    {
+                        "error": error_str,
+                        "traceback": traceback_str,
+                    },
+                    "error"
+                )
 
     except BaseException as e:
         print(f"{attributes['source_id']}: {e.__class__.__name__}: {e}\n{traceback.format_exc()}")
 
 
-def download_sources(sources, use_cache, do_store=False):
+def download_sources(sources, use_cache, do_store=False, meta=False):
 
     pool = Pool()
 
     source_data_list = pool.map(
-        partial(download_source, use_cache, do_store),
+        partial(download_source, use_cache, do_store, "meta" if meta else "snapshot"),
         sources.sources
     )
 
@@ -260,8 +270,16 @@ def main():
         if args.command == "dump":
             dump_raw_data(all_data, place_id_filters=place_id_filters)
 
+    elif args.command == "dump-meta" or args.command == "test-meta":
+        all_data = download_sources(sources, use_cache=args.cache, meta=True)
+        if args.command == "dump-meta":
+            dump_raw_data(all_data, place_id_filters=place_id_filters)
+
     elif args.command == "store":
         download_sources(sources, use_cache=args.cache, do_store=True)
+
+    elif args.command == "store-meta":
+        download_sources(sources, use_cache=args.cache, do_store=True, meta=True)
 
     elif args.command == "load":
         place_id_to_timestamps = Storage().load_sources(sources)

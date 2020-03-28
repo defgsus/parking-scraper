@@ -9,14 +9,20 @@ import tqdm
 class Storage:
 
     def __init__(self):
-        self.storage_dir = os.path.join(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__))),
-            "snapshots",
-        )
-        self.error_dir = os.path.join(
-            os.path.abspath(os.path.dirname(os.path.dirname(__file__))),
-            "errors",
-        )
+        self.directories = {
+            "snapshot": os.path.join(
+                os.path.abspath(os.path.dirname(os.path.dirname(__file__))),
+                "snapshots",
+            ),
+            "meta": os.path.join(
+                os.path.abspath(os.path.dirname(os.path.dirname(__file__))),
+                "snapshots-meta",
+            ),
+            "error": os.path.join(
+                os.path.abspath(os.path.dirname(os.path.dirname(__file__))),
+                "errors",
+            )
+        }
 
     @classmethod
     def timestamp_to_filename(cls, timestamp, ext=None):
@@ -29,9 +35,16 @@ class Storage:
     def filename_to_timestamp(cls, fn):
         return datetime.datetime.strptime(fn[:19], "%Y-%m-%d-%H-%M-%S")
 
-    def store(self, source_id, timestamp, data, is_error=False):
+    def store(self, source_id, timestamp, data, type):
+        """
+        Store json data for source_id
+        :param source_id: str
+        :param timestamp: datetime
+        :param data: dict | list
+        :param type: "snapshot", "meta", "error"
+        """
         file_path = os.path.join(
-            self.storage_dir if not is_error else self.error_dir,
+            self.directories[type],
             source_id,
             timestamp.strftime("%Y-%m"),
         )
@@ -56,7 +69,7 @@ class Storage:
             "filename": str,        # absolute filename
         }
         """
-        path = os.path.join(self.storage_dir, source_id)
+        path = os.path.join(self.snapshot_dir, source_id)
         ret_files = []
         for root, dirs, files in os.walk(path):
             for file in files:

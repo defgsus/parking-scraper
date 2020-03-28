@@ -58,9 +58,9 @@ class DataSource:
 
         You can also return unconverted API results, if they are small.
 
-    Also add following class-attributes:
-        source_id: str, the unique identifier for this data source
-        web_url: str, some human-friendly url of the web service, e.g. `https://parken-in-dorf-xy.de/`
+        Also add following class-attributes:
+            source_id: str, the unique identifier for this data source
+            web_url: str, some human-friendly url of the web service, e.g. `https://parken-in-dorf-xy.de/`
 
     For canonical data export you can override `transform_snapshot_data()` to
     convert your snapshot data into a generic format
@@ -102,6 +102,9 @@ class DataSource:
 
     def download_snapshot_data(self):
         raise NotImplementedError
+
+    def download_meta_data(self):
+        pass
 
     def get_url(self, url, method="GET", data=None, encoding=None):
         if self.use_cache:
@@ -151,6 +154,13 @@ class DataSource:
         except (ValueError, TypeError):
             return None
 
+    @staticmethod
+    def float_or_none(x):
+        try:
+            return float(str(x))
+        except (ValueError, TypeError):
+            return None
+
     def place_name_to_id(self, place_name):
         place_id = "".join(
             c if c.isalnum() or c in " \t" else "-"
@@ -163,8 +173,8 @@ class DataSource:
 
     def transform_snapshot_data(self, data):
         """
-        Return canonical data for previously stored snapshot date retrieved from `get_data`
-        :param data: list
+        Return canonical data for previously stored snapshot data retrieved from `download_snapshot_data`
+        :param data: list | dict
         :return: list of dict
         {
             "place_id": str,            # unique id of parking-place
@@ -190,3 +200,43 @@ class DataSource:
             })
 
         return ret_data
+
+    def transform_meta_data(self, data):
+        """
+        Return canonical data for previously stored meta data retrieved from `download_meta_data`
+        :param data: list
+        :return: dict
+        {
+            "source_id": str,
+            "source_web_url": str,
+            "places": {
+                str: {                          # mapping key is unique id of parking-place
+                    "place_id": str,
+                    "place_name": str,
+                    "city_name", str | None,
+                    "address": [str,] | None,
+                    "num_all": int | None,
+                }
+            }
+        }
+
+        The base implementation creates the whole dictionary and an initialized `places` dict
+        """
+        places = dict()
+        if isinstance(data, list):
+            for place in data:
+                if isinstance(place, dict) and place.get("place_name"):
+                    places.append({
+                        "place_id": self.place_name_to_id(place["place_name"]),
+                        "place_name": place["place_name"],
+                        "city_name": place.get("city_name"),
+                        "address": place.get("address"),
+                        "num_all": place.get("num_all"),
+                    })
+
+        return {
+            "source_id": self.source_id,
+            "source_web_url": self.web_url,
+            "places": places,
+        }
+
