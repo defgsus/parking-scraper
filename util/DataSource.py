@@ -165,12 +165,16 @@ class DataSource:
         """
         Return canonical data for previously stored snapshot date retrieved from `get_data`
         :param data: list
-        :return: list
+        :return: list of dict
+        {
+            "place_id": str,            # unique id of parking-place
+            "num_free": int | None,
+        }
         """
         ret_data = []
         for entry in data:
-            if "place_name" not in entry:
-                raise KeyError(f"Expecting 'place_name' in {self.__class__.__name__}.transform_snapshot_data() "
+            if "place_name" not in entry and "id" not in entry:
+                raise KeyError(f"Expecting 'place_name' or 'id' in {self.__class__.__name__}.transform_snapshot_data() "
                                f"for entry {entry}")
             if "num_free" not in entry and "num_current" not in entry:
                 raise KeyError(f"Expecting 'num_free' in {self.__class__.__name__}.transform_snapshot_data() "
@@ -181,7 +185,7 @@ class DataSource:
                 num_free = entry["num_free"]
 
             ret_data.append({
-                "place_id": self.place_name_to_id(entry["place_name"]),
+                "place_id": self.place_name_to_id(entry.get("id") or entry["place_name"]),
                 "num_free": num_free
             })
 

@@ -4,3 +4,4 @@ requests>=2.23.0
 xmljson>=0.2.0
 tqdm>=4.43.0
 numpy>=1.18.2
+influxdb>=5.2.3

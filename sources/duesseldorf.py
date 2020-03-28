@@ -32,11 +32,24 @@ class ParkingDuesseldorf(DataSource):
             if num_all is not None and num_occupied is not None:
                 num_cur = num_all - num_occupied
 
+            place_name = entry["{http://www.opengis.net/gml}name"]
+
             parking_places.append({
-                "place_name": entry["{http://www.opengis.net/gml}name"],
-                "id": entry["{http://www.opengis.net/gml}name"].split()[0],
+                "place_name": place_name,
+                "id": "-".join(place_name.split()[:2]),
                 "num_all": num_all,
                 "num_free": num_cur,
             })
 
         return parking_places
+
+    def transform_snapshot_data(self, data):
+        ret_data = []
+        for entry in data:
+            place_id = entry.get("id") or "-".join(entry["place_name"].split()[:2])
+            ret_data.append({
+                "place_id": self.place_name_to_id(place_id),
+                "num_free": entry.get("num_free") or entry.get("num_current"),
+            })
+
+        return ret_data

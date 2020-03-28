@@ -10,7 +10,7 @@ import numpy as np
 
 import tqdm
 
-from util import DataSources, Storage, RegexFilter, to_json
+from util import DataSources, Storage, RegexFilter, to_json, settings
 from sources import *
 
 
@@ -26,6 +26,7 @@ def parse_args():
         list: list all data sources
         load: load snapshots from disk and print
         load-stats: load snapshots from disk and print stats
+        to-influx: load snapshots and export to influx
         """
     )
     parser.add_argument(
@@ -38,7 +39,7 @@ def parse_args():
     )
     parser.add_argument(
         "-f", "--format", type=str, default="text",
-        help="text, json, csv",
+        help="text, json, csv, influxdb",
     )
     parser.add_argument(
         "-c", "--cache", type=bool, nargs="?", default=False, const=True,
@@ -127,8 +128,51 @@ def dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=None, f
             print(place_id)
             for value in sorted(place_id_to_timestamps[place_id], key=lambda v: v["timestamp"]):
                 print("  ", value["timestamp"].isoformat(), ":", value["num_free"])
-    else:
+
+    elif format == "json":
         print(to_json(filtered_data))
+
+    elif format == "influxdb":
+        influx_data = convert_place_id_to_timestamps_to_influx(place_id_to_timestamps)
+        print(to_json(influx_data))
+
+
+def export_place_id_to_timestamps_influx(place_id_to_timestamps, place_id_filters=None):
+    from influxdb import InfluxDBClient
+    client = InfluxDBClient(
+        settings.INFLUX_DB_HOST, settings.INFLUX_DB_PORT,
+        settings.INFLUX_DB_USER, settings.INFLUX_DB_PASSWORD,
+        settings.INFLUX_DB_NAME
+    )
+
+    filtered_data = dict()
+    for place_id in sorted(place_id_to_timestamps):
+        if place_id_filters and not place_id_filters.matches(place_id):
+            continue
+        filtered_data[place_id] = place_id_to_timestamps[place_id]
+
+    influx_data = convert_place_id_to_timestamps_to_influx(place_id_to_timestamps)
+    client.create_database('parking_scraper')
+
+    client.write_points(influx_data)
+
+
+def convert_place_id_to_timestamps_to_influx(place_id_to_timestamps):
+    influx_data = []
+    for place_id, timestamps in place_id_to_timestamps.items():
+        for timestamp in timestamps:
+            if timestamp["num_free"] is not None:
+                influx_data.append({
+                    "measurement": "free_parking_spaces",
+                    "tags": {
+                        "place_id": place_id,
+                    },
+                    "time": timestamp["timestamp"].isoformat(),
+                    "fields": {
+                        "value": timestamp["num_free"]
+                    }
+                })
+    return influx_data
 
 
 def dump_stats(place_arrays, place_id_filters=None, format="text"):
@@ -226,6 +270,10 @@ def main():
     elif args.command == "load-stats":
         place_arrays = Storage().load_sources_arrays(sources)
         dump_stats(place_arrays, place_id_filters=place_id_filters, format=args.format)
+
+    elif args.command == "to-influx":
+        place_id_to_timestamps = Storage().load_sources(sources)
+        export_place_id_to_timestamps_influx(place_id_to_timestamps, place_id_filters=place_id_filters)
 
     else:
         print(f"Unknown command '{args.command}'")
