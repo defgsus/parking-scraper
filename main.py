@@ -147,6 +147,38 @@ def dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=None, f
         print(to_json(influx_data))
 
 
+def dump_source_to_meta(source_id_to_meta, format="text"):
+    if format == "text":
+        for source_meta in source_id_to_meta.values():
+            print("-"*10, source_meta["source_id"])
+            for place in source_meta["places"].values():
+                print(f"  {place['city_name']:25} {place['place_name']:50} ({place['place_id']})")
+
+    elif format == "json":
+        print(to_json(source_id_to_meta, indent=2))
+
+    elif format == "csv":
+        keys = ["city_name", "place_name", "num_all", "address", "coordinates", "place_id", "place_url", "source_id",
+                "source_web_url"]
+
+        rows = []
+        for source_meta in source_id_to_meta.values():
+            for place in source_meta["places"].values():
+                place = place.copy()
+                if place["address"]:
+                    place["address"] = "\n".join(place["address"])
+                if place["coordinates"]:
+                    place["coordinates"] = "%s, %s" % tuple(place["coordinates"])
+                rows.append(place)
+
+        with StringIO() as fp:
+            writer = csv.DictWriter(fp, keys)
+            writer.writeheader()
+            writer.writerows(rows)
+            fp.seek(0)
+            print(fp.read())
+
+
 def export_place_id_to_timestamps_influx(place_id_to_timestamps, place_id_filters=None):
     from influxdb import InfluxDBClient
     client = InfluxDBClient(
@@ -287,7 +319,7 @@ def main():
 
     elif args.command == "load-meta":
         source_id_to_meta = Storage().load_sources_meta(sources)
-        print(to_json(source_id_to_meta, indent=2))
+        dump_source_to_meta(source_id_to_meta, format=args.format)
 
     elif args.command == "load-stats":
         place_arrays = Storage().load_sources_arrays(sources)

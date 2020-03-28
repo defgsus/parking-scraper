@@ -191,6 +191,10 @@ class Storage:
                     canonical_data = data_source.transform_meta_data(meta_data)
                     data_source._make_places_complete(canonical_data["places"].values())
 
+            if not canonical_data["places"]:
+                raise AssertionError(f"No places in meta-data for {source_id} "
+                                     f"({data_source.__class__.__name__}.transform_meta_data)")
+
             source_id_to_meta[source_id] = canonical_data
 
         return source_id_to_meta

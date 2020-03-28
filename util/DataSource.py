@@ -164,7 +164,7 @@ class DataSource:
     def place_name_to_id(self, place_name):
         place_id = "".join(
             c if c.isalnum() or c in " \t" else "-"
-            for c in place_name
+            for c in str(place_name)
         ).replace(" ", "-").replace("ß", "ss")
 
         place_id = f"{self.source_id}-{place_id}"

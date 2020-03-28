@@ -1,3 +1,4 @@
+import re
 import json
 import warnings
 
@@ -67,9 +68,39 @@ if BAHN_API_TOKEN:
                         num_cur = self.int_or_none(text.split()[-1])
 
                 ret_data.append({
-                    "place_id": self.place_name_to_id(entry["space"]["name"]),
+                    "place_id": self.place_name_to_id(entry["space"]["id"]),
                     "num_all": entry["allocation"].get("capacity"),
                     "num_free": num_cur,
                 })
+
+            return ret_data
+
+        def transform_meta_data(self, data):
+            ret_data = super().transform_meta_data(None)
+            try:
+                data["allocations"]
+            except (AttributeError, KeyError, TypeError) as e:
+                return ret_data
+
+            for entry in data["allocations"]:
+                place_id = self.place_name_to_id(entry["space"]["id"])
+                place_name = entry.get("station", {}).get("nameDisplay") or entry["space"]["name"]
+
+                city_name = []
+                title_l = entry["space"]["title"].split()
+                while title_l:
+                    if title_l[0].startswith("P") and title_l[0][1].isdigit():
+                        break
+                    city_part = title_l.pop(0)
+                    if city_part not in ("Hbf", "Südkreuz") and "bahnhof" not in city_part:
+                        city_name.append(city_part)
+                city_name = " ".join(city_name)
+
+                ret_data["places"][place_id] = {
+                    "place_id": place_id,
+                    "place_name": place_name,
+                    "num_all": entry["allocation"].get("capacity"),
+                    "city_name": city_name,
+                }
 
             return ret_data
