@@ -56,7 +56,7 @@ class ParkingApag(DataSource):
                     "place_name": place_link.text.strip(),
                     "num_all": self.int_or_none(elem_total.text.split()[-1]) if elem_total else None,
                     "address": [i for i in elem_address.text.strip().split("\n") if i],
-                    "coords": coords,
+                    "coordinates": coords,
                 })
 
         return parking_places

@@ -58,18 +58,19 @@ class Storage:
         with open(long_filename, "w") as fp:
             json.dump(data, fp, indent=1)
 
-    def find_files(self, source_id, min_timestamp=None):
+    def find_files(self, source_id, min_timestamp=None, type="snapshot"):
         """
         Find all snapshot files for the given source
         :param source_id: str, id of source
         :param min_timestamp: datetime, optional lower limit on timestamps
-        :return: list of dict
+        :param type: str, snapshot/meta/error
+        :return: list of dict, sorted by timestamp
         {
             "timestamp": datetime   # timestamp of data retrieval
             "filename": str,        # absolute filename
         }
         """
-        path = os.path.join(self.directories["snapshot"], source_id)
+        path = os.path.join(self.directories[type], source_id)
         ret_files = []
         for root, dirs, files in os.walk(path):
             for file in files:
@@ -84,7 +85,7 @@ class Storage:
         ret_files.sort(key=lambda f: f["timestamp"])
         return ret_files
 
-    def load_files(self, source_id, min_timestamp=None):
+    def load_files(self, source_id, min_timestamp=None, type="snapshot"):
         """
         Load all snapshot files for the given source.
         Will remove snapshots that can not be loaded / json-parsed.
@@ -98,7 +99,7 @@ class Storage:
             "data": list            # actual data content of snapshot
         }
         """
-        files = self.find_files(source_id, min_timestamp=min_timestamp)
+        files = self.find_files(source_id, min_timestamp=min_timestamp, type=type)
         out_files = []
 
         for file in files:
@@ -112,6 +113,19 @@ class Storage:
                 pass
 
         return out_files
+
+    def load_meta(self, source_id):
+        """
+        Load latest meta snapshot
+        :return: dict or None
+        """
+        files = self.find_files(source_id, type="meta")
+        if not files:
+            return None
+
+        with open(files[-1]["filename"]) as fp:
+            return json.load(fp)
+        # TODO might return the latest 'valid' data here
 
     def load_sources(self, sources, min_timestamp=None):
         from .DataSource import DataSources
@@ -152,6 +166,32 @@ class Storage:
                     })
 
         return place_id_to_timestamps
+
+    def load_sources_meta(self, sources, min_timestamp=None):
+        from .DataSource import DataSources
+
+        source_id_to_meta = dict()
+
+        for attributes in tqdm.tqdm(sources.sources):
+            source_id = attributes["source_id"]
+
+            data_source = DataSources.create(source_id)
+
+            meta_data = self.load_meta(source_id)
+
+            if meta_data:
+                canonical_data = data_source.transform_meta_data(meta_data)
+            else:
+                snapshot_files = self.find_files(source_id, min_timestamp)
+                if not snapshot_files:
+                    raise AssertionError("No meta-data and no snapshot-data stored")
+                with open(snapshot_files[-1]["filename"]) as fp:
+                    meta_data = json.load(fp)
+                    canonical_data = data_source.transform_meta_data(meta_data)
+
+            source_id_to_meta[source_id] = canonical_data
+
+        return source_id_to_meta
 
     def load_sources_arrays(self, sources, min_timestamp=None):
         place_timestamps = self.load_sources(sources, min_timestamp=min_timestamp)

@@ -285,6 +285,10 @@ def main():
         place_id_to_timestamps = Storage().load_sources(sources)
         dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=place_id_filters, format=args.format)
 
+    elif args.command == "load-meta":
+        source_id_to_meta = Storage().load_sources_meta(sources)
+        print(to_json(source_id_to_meta, indent=2))
+
     elif args.command == "load-stats":
         place_arrays = Storage().load_sources_arrays(sources)
         dump_stats(place_arrays, place_id_filters=place_id_filters, format=args.format)

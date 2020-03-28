@@ -215,6 +215,7 @@ class DataSource:
                     "place_name": str,
                     "city_name", str | None,
                     "address": [str,] | None,
+                    "coordinates": [float, float] | None,
                     "num_all": int | None,
                 }
             }
@@ -226,13 +227,15 @@ class DataSource:
         if isinstance(data, list):
             for place in data:
                 if isinstance(place, dict) and place.get("place_name"):
-                    places.append({
-                        "place_id": self.place_name_to_id(place["place_name"]),
+                    place_id = self.place_name_to_id(place["place_name"])
+                    places[place_id] = {
+                        "place_id": place_id,
                         "place_name": place["place_name"],
-                        "city_name": place.get("city_name"),
+                        "city_name": place.get("city_name") or getattr(self, "city_name", None),
                         "address": place.get("address"),
+                        "coordinates": place.get("coordinates"),
                         "num_all": place.get("num_all"),
-                    })
+                    }
 
         return {
             "source_id": self.source_id,
