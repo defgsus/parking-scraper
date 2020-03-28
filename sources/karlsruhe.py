@@ -8,6 +8,7 @@ class ParkingKarlsruhe(DataSource):
 
     source_id = "karlsruhe-parken"
     web_url = "https://web1.karlsruhe.de/service/Parken/"
+    city_name = "Karlsruhe"
 
     def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)

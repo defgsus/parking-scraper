@@ -9,6 +9,7 @@ class ParkingLuebeck(DataSource):
 
     source_id = "parken-luebeck"
     web_url = "https://www.parken-luebeck.de/parkmoeglichkeiten.html"
+    city_name = "Lübeck"
 
     def download_snapshot_data(self):
         text = self.get_url(self.web_url)

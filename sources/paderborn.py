@@ -8,6 +8,7 @@ class ParkingPaderborn(DataSource):
 
     source_id = "paderborn-parken"
     web_url = "https://www4.paderborn.de/aspparkinfo/default.aspx"
+    city_name = "Paderborn"
 
     def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)

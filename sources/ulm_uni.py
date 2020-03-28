@@ -8,6 +8,7 @@ class ParkingUlmUni(DataSource):
 
     source_id = "uni-ulm-parken"
     web_url = "https://www.uni-ulm.de/einrichtungen/kiz/weiteres/campus-navigation/anreise/parkplaetze/"
+    city_name = "Ulm"
 
     def download_snapshot_data(self):
         text = self.get_url("http://tsu-app.rrooaarr.biz/front/soap.php?counterid=10021")

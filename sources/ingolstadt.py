@@ -8,6 +8,7 @@ class ParkingIngolstadt(DataSource):
 
     source_id = "ingolstadt-parken"
     web_url = "https://www.ingolstadt.de/Wirtschaft/parkIN/Derzeit-freie-Parkpl%C3%A4tze"
+    city_name = "Ingolstadt"
 
     def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)

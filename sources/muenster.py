@@ -8,6 +8,7 @@ class ParkingMuenster(DataSource):
 
     source_id = "stadt-muenster-parken"
     web_url = "https://www.stadt-muenster.de/index.php?id=10910"
+    city_name = "Münster"
 
     def download_snapshot_data(self):
         text = self.get_url(self.web_url)

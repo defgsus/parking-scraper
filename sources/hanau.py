@@ -9,6 +9,7 @@ class ParkingHanau(DataSource):
 
     source_id = "hanau-neu-erleben-parken"
     web_url = "http://www.hanau-neu-erleben.de/reise/parken/072752/index.html"
+    city_name = "Hanau"
 
     def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)

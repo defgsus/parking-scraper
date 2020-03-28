@@ -10,6 +10,7 @@ class ParkingOldenburg(DataSource):
 
     source_id = "oldenburg-service-parken"
     web_url = "https://oldenburg-service.de/cros.php"
+    city_name = "Oldenburg"
 
     def download_snapshot_data(self):
         text = self.get_url(self.web_url)

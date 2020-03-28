@@ -8,6 +8,7 @@ class ParkingPotsdam(DataSource):
 
     source_id = "mobil-potsdam-parken"
     web_url = "https://www.mobil-potsdam.de/de/parken/parken-in-potsdam/"
+    city_name = "Potsdam"
 
     def download_snapshot_data(self):
         soup = self.get_html_soup(f"{self.web_url}?no_cache=1")

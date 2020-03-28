@@ -9,6 +9,7 @@ class ParkingLimburg(DataSource):
 
     source_id = "limburg-parken"
     web_url = "https://p127393.mittwaldserver.info/LM/_pls/pls.php"
+    city_name = "Limburg"
 
     def download_snapshot_data(self):
         soup = self.get_html_soup(self.web_url)
