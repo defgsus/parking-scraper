@@ -9,11 +9,11 @@ from util import DataSource
 class ParkingOldenburg(DataSource):
 
     source_id = "oldenburg-service-parken"
-    web_url = "https://oldenburg-service.de/cros.php"
+    web_url = "https://oldenburg-service.de/pls/#/hauspark"
     city_name = "Oldenburg"
 
     def download_snapshot_data(self):
-        text = self.get_url(self.web_url)
+        text = self.get_url("https://oldenburg-service.de/cros.php")
 
         data = xmljson.parker.data(fromstring(text))
         return data["Parkhaus"]
@@ -24,7 +24,7 @@ class ParkingOldenburg(DataSource):
         for entry in data:
             ret_data.append({
                 "place_id": self.place_name_to_id(entry["Name"]),
-                "num_free": entry["Aktuell"],
+                "num_free": entry["Gesamt"] - entry["Aktuell"],
                 "status": status_mapping.get(entry["Status"]),
             })
 
