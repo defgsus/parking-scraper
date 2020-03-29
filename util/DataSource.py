@@ -112,12 +112,17 @@ class DataSource:
                 with open(self.get_cache_filename(url)) as fp:
                     return fp.read()
 
-        print("downloading", url)
-        response = self.session.request(method, url, data=data)
-        if encoding is None:
-            text = response.text
-        else:
-            text = response.content.decode(encoding)
+        for try_num in range(5):
+            try:
+                print("downloading", url)
+                response = self.session.request(method, url, data=data, timeout=2)
+                if encoding is None:
+                    text = response.text
+                else:
+                    text = response.content.decode(encoding)
+                break
+            except requests.ConnectionError:
+                pass
 
         if self.use_cache:
             if not os.path.exists(self.cache_dir):

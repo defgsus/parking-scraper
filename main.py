@@ -92,7 +92,7 @@ def download_source(use_cache, do_store, type, attributes):
 
 def download_sources(sources, use_cache, do_store=False, meta=False):
 
-    pool = Pool()
+    pool = Pool(len(sources.sources))
 
     source_data_list = pool.map(
         partial(download_source, use_cache, do_store, "meta" if meta else "snapshot"),
