@@ -61,3 +61,15 @@ class ParkingApag(DataSource):
                 })
 
         return parking_places
+
+    def transform_meta_data(self, data):
+        ret_data = super().transform_meta_data(data)
+        old_places = ret_data["places"]
+        ret_data["places"] = dict()
+
+        for place in old_places.values():
+            place_id = self.place_name_to_id(f"{place['city_name']} {place['place_name']}")
+            place["place_id"] = place_id
+            ret_data["places"][place_id] = place
+
+        return ret_data
