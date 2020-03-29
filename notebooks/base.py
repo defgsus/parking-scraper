@@ -11,6 +11,8 @@ from bokeh.models import Range1d
 
 output_notebook()
 
+from IPython.core.display import display, HTML
+
 sys.path.append("..")
 
 from util import DataSources, Storage
@@ -28,3 +30,7 @@ def get_datetime_formatter():
         months=["%Y/%m"],
         years=["%Y"],
     )
+
+
+def print_html(x):
+    display(HTML(x))
