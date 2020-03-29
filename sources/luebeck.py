@@ -40,8 +40,14 @@ class ParkingLuebeck(DataSource):
         ret_data = []
         for entry in data:
             ret_data.append({
-                "place_id": self.place_name_to_id(entry["place_name"] + "-" + entry["id"]),
+                "place_id": self.place_name_to_id(entry["id"]),
                 "num_free": entry.get("num_current") or entry.get("num_free")
             })
 
         return ret_data
+
+    def transform_meta_data(self, data):
+        #for place in data:
+        #    place["id"] = f"{place['place_name'].lower()} {place['id']}"
+
+        return super().transform_meta_data(data)

@@ -70,11 +70,21 @@ class ParkingFFH(DataSource):
     def transform_snapshot_data(self, data):
         ret_data = []
         for entry in data:
+            # TODO: this one comes only sporadically and breaks the 'meta' system
+            if entry["city_name"].lower() == "frankfurt" and entry["place_name"] == "Westend":
+                continue
+
             ret_data.append({
                 "place_id": self.place_name_to_id(
-                    entry["city_name"] + "-" + entry["place_name"]
+                    entry["city_name"].lower() + " " + entry["place_name"]
                 ),
                 "num_free": entry.get("num_current") or entry.get("num_free")
             })
 
         return ret_data
+
+    def transform_meta_data(self, data):
+        for place in data:
+            place["id"] = f"{place['city_name'].lower()} {place['place_name']}"
+
+        return super().transform_meta_data(data)

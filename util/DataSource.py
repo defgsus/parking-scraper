@@ -228,7 +228,10 @@ class DataSource:
         if data and isinstance(data, list):
             for place in data:
                 if isinstance(place, dict) and place.get("place_name"):
-                    place_id = self.place_name_to_id(place["place_name"])
+                    if place.get("id"):
+                        place_id = self.place_name_to_id(place["id"])
+                    else:
+                        place_id = self.place_name_to_id(place["place_name"])
                     places[place_id] = {
                         "place_id": place_id,
                         "place_name": place["place_name"],

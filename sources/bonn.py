@@ -38,11 +38,10 @@ class ParkingBonn(DataSource):
 
         ret_data = []
         for entry in xml_entries:
-            if entry["status"] in (0, ):
-                ret_data.append({
-                    "place_name": entry["bezeichnung"],
-                    "num_all": entry["gesamt"],
-                })
+            ret_data.append({
+                "place_name": entry["bezeichnung"],
+                "num_all": entry["gesamt"],
+            })
 
         ret_data = super().transform_meta_data(ret_data)
 
