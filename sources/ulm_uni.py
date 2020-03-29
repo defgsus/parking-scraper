@@ -14,6 +14,7 @@ class ParkingUlmUni(DataSource):
         text = self.get_url("http://tsu-app.rrooaarr.biz/front/soap.php?counterid=10021")
 
         parking_places = [{
+            # TODO: actually, this seems to be the number of occupied spaces
             "num_free": self.int_or_none(text)
         }]
 
