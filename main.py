@@ -142,9 +142,9 @@ def dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=None, f
     elif format == "json":
         print(to_json(filtered_data))
 
-    elif format == "influxdb":
-        influx_data = convert_place_id_to_timestamps_to_influx(place_id_to_timestamps)
-        print(to_json(influx_data))
+    #elif format == "influxdb":
+    #    influx_data = convert_place_id_to_timestamps_to_influx(place_id_to_timestamps)
+    #    print(to_json(influx_data))
 
 
 def dump_source_to_meta(source_id_to_meta, format="text"):
@@ -179,7 +179,7 @@ def dump_source_to_meta(source_id_to_meta, format="text"):
             print(fp.read())
 
 
-def export_place_id_to_timestamps_influx(place_id_to_timestamps, place_id_filters=None):
+def export_place_id_to_timestamps_influx(place_id_to_timestamps, source_id_to_meta, place_id_filters=None):
     from influxdb import InfluxDBClient
     client = InfluxDBClient(
         settings.INFLUX_DB_HOST, settings.INFLUX_DB_PORT,
@@ -193,21 +193,30 @@ def export_place_id_to_timestamps_influx(place_id_to_timestamps, place_id_filter
             continue
         filtered_data[place_id] = place_id_to_timestamps[place_id]
 
-    influx_data = convert_place_id_to_timestamps_to_influx(place_id_to_timestamps)
+    influx_data = convert_place_id_to_timestamps_to_influx(place_id_to_timestamps, source_id_to_meta)
     client.create_database('parking_scraper')
 
     client.write_points(influx_data)
 
 
-def convert_place_id_to_timestamps_to_influx(place_id_to_timestamps):
+def convert_place_id_to_timestamps_to_influx(place_id_to_timestamps, source_id_to_meta):
+    place_id_lookup = dict()
+    for source_meta in source_id_to_meta.values():
+        for place in source_meta["places"].values():
+            place_id_lookup[place["place_id"]] = place
+
     influx_data = []
     for place_id, timestamps in place_id_to_timestamps.items():
+        meta = place_id_lookup[place_id]
+
         for timestamp in timestamps:
             if timestamp["num_free"] is not None:
                 influx_data.append({
                     "measurement": "free_parking_spaces",
                     "tags": {
                         "place_id": place_id,
+                        "place_name": meta["place_name"],
+                        "city_name": meta["city_name"],
                     },
                     "time": timestamp["timestamp"].isoformat(),
                     "fields": {
@@ -325,9 +334,10 @@ def main():
         place_arrays = Storage().load_sources_arrays(sources)
         dump_stats(place_arrays, place_id_filters=place_id_filters, format=args.format)
 
-    elif args.command == "to-influx":
+    elif args.command == "to-influxdb":
         place_id_to_timestamps = Storage().load_sources(sources)
-        export_place_id_to_timestamps_influx(place_id_to_timestamps, place_id_filters=place_id_filters)
+        source_id_to_meta = Storage().load_sources_meta(sources)
+        export_place_id_to_timestamps_influx(place_id_to_timestamps, source_id_to_meta, place_id_filters=place_id_filters)
 
     else:
         print(f"Unknown command '{args.command}'")
