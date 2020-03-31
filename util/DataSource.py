@@ -124,7 +124,7 @@ class DataSource:
         for try_num in range(3):
             try:
                 print("downloading", url)
-                response = self.session.request(method, url, data=data, timeout=5)
+                response = self.session.request(method, url, data=data, timeout=10)
                 if encoding is None:
                     text = response.text
                 else:
