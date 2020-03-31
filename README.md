@@ -33,7 +33,8 @@ rsync -avz -L -e 'ssh -p PORT' USER@SERVER:/PATH/parking-scraper/snapshots .
 to update your local `snapshots` directory.
 
 For disk-space reasons, a `DataSource` instance should store minimal necessary info and throw any meta-info away. 
-For example, it should not store a complete geojson file, just the names and free spaces of each parking lot.
+For example, it should not store a complete geojson file, just the names, statuses and free spaces 
+of each parking lot. Storage of meta data can be implemented separately.
 
 Each `DataSource` can implement a `transform_snapshot_data` function that transforms a snapshot into *cononical* 
 data that has the same format for each parking place and can be exported via `python main.py load` 
@@ -44,4 +45,12 @@ through `util.Storage` and `util.DataSources` (see `./notebooks/`). or via
 
 ```shell script
 python main.py load
+```
+
+### cron
+
+Use `crontab -e` and something like
+
+```crontab
+*/15 * * * * /bin/sh -c 'cd /opt/parking-scraper && ./env/bin/python main.py store'
 ```
