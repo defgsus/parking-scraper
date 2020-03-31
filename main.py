@@ -33,7 +33,11 @@ def parse_args():
     )
     parser.add_argument(
         "-i", "--include", type=str, nargs="+",
-        help="regex to match names of data sources",
+        help="regex to match names of data sources to include",
+    )
+    parser.add_argument(
+        "-e", "--exclude", type=str, nargs="+",
+        help="regex to match names of data sources to exclude",
     )
     parser.add_argument(
         "-id", "--include-id", type=str, nargs="+",
@@ -243,10 +247,19 @@ def dump_stats(place_arrays, place_id_filters=None, format="text"):
 
         true_y = [v for v in place["y"] if v is not None]
 
+        abs_change = 0
+        if true_y:
+            last_v = true_y[0]
+            for v in true_y[1:]:
+                abs_change += abs(v - last_v)
+                last_v = v
+            abs_change / len(true_y)
+
         stats = {
             "place_id": place["place_id"],
             "num_timestamps": len(place["x"]),
             "num_changes": num_changes,
+            "abs_changes": abs_change,
         }
 
         for key in ("average", "min", "max", "median", "mean", "std", "var"):
@@ -268,6 +281,7 @@ def dump_stats(place_arrays, place_id_filters=None, format="text"):
                 f" {place['max']:7} max"
                 f" {place['std']:7} std"
                 f" {place['var']:7} var"
+                f" {place['abs_changes']:7} abs-changes"
             )
         print(f"num places: {len(place_arrays)}")
 
@@ -290,9 +304,10 @@ def main():
     sources = DataSources()
 
     if args.include:
-        # TODO: should be ORed / use RegexFilter
-        for regex in args.include:
-            sources = sources.filtered(regex)
+        sources = sources.filtered(*args.include)
+
+    if args.exclude:
+        sources = sources.excluded(*args.exclude)
 
     if not sources.sources:
         print("No data sources matching the filter")

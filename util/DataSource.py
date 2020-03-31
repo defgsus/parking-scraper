@@ -8,6 +8,8 @@ import xmljson
 
 import bs4
 
+from util import RegexFilter
+
 
 class DataSources:
 
@@ -16,15 +18,22 @@ class DataSources:
     def __init__(self):
         self.sources = list(self._registered_sources.values())
 
-    def filtered(self, name_regex):
-        regex = re.compile(name_regex)
+    def filtered(self, *expressions):
+        exp_filter = RegexFilter(*expressions)
+        return self.filtered_func(
+            lambda s: exp_filter.matches(s["source_id"])
+        )
 
+    def excluded(self, *expressions):
+        exp_filter = RegexFilter(*expressions)
+        return self.filtered_func(
+            lambda s: not exp_filter.matches(s["source_id"])
+        )
+
+    def filtered_func(self, func):
         sources = self.__class__()
         sources.sources = list(
-            filter(
-                lambda a: regex.findall(a["source_id"]),
-                self.sources
-            )
+            filter(func, self.sources)
         )
         return sources
 
