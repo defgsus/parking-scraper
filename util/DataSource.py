@@ -121,10 +121,10 @@ class DataSource:
                 with open(self.get_cache_filename(url)) as fp:
                     return fp.read()
 
-        for try_num in range(5):
+        for try_num in range(3):
             try:
                 print("downloading", url)
-                response = self.session.request(method, url, data=data, timeout=2)
+                response = self.session.request(method, url, data=data, timeout=5)
                 if encoding is None:
                     text = response.text
                 else:
