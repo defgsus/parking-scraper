@@ -59,7 +59,7 @@ class ParkingDuesseldorf(DataSource):
         return ret_data
 
     def transform_meta_data(self, data):
-        data = self.download_meta_data()
+        # data = self.download_meta_data()
 
         parking_places = []
 
