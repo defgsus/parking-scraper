@@ -38,7 +38,7 @@ class ParkingNuernberg(DataSource):
         return super().transform_snapshot_data(self._fix_data(data))
 
     def transform_meta_data(self, data):
-        return super().transform_snapshot_data(self._fix_data(data))
+        return super().transform_meta_data(self._fix_data(data))
 
     def _fix_data(self, data):
         data = deepcopy(data)
