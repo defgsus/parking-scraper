@@ -2,6 +2,7 @@ import requests
 import re
 import os
 import hashlib
+import unicodedata
 from xml.etree.ElementTree import fromstring
 
 import xmljson
@@ -141,8 +142,8 @@ class DataSource:
 
         return text
 
-    def get_html_soup(self, url):
-        text = self.get_url(url)
+    def get_html_soup(self, url, encoding=None):
+        text = self.get_url(url, encoding=encoding)
         soup = bs4.BeautifulSoup(text, parser="html.parser", features="lxml")
         return soup
 
@@ -176,13 +177,17 @@ class DataSource:
             return None
 
     def place_name_to_id(self, place_name):
+        place_name = str(place_name)
+        place_name = place_name.replace("ß", "ss")
+        place_name = unicodedata.normalize('NFKD', place_name).encode("ascii", "ignore").decode("ascii")
+
         place_id = "".join(
             c if c.isalnum() or c in " \t" else "-"
-            for c in str(place_name)
-        ).replace(" ", "-").replace("ß", "ss")
+            for c in place_name
+        ).replace(" ", "-")
 
         place_id = f"{self.source_id}-{place_id}"
-        place_id = self._re_double_minus.sub("-", place_id)
+        place_id = self._re_double_minus.sub("-", place_id).strip("-")
         return place_id
 
     def transform_snapshot_data(self, data):
