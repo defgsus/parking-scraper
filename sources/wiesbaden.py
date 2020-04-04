@@ -1,5 +1,4 @@
-import bs4
-import json
+from copy import deepcopy
 
 from util import DataSource
 
@@ -23,11 +22,26 @@ class ParkingWiesbaden(DataSource):
                 if len(numbers) != 2:
                     numbers = (None, None)
                 parking_places.append({
-                    "place_name": row[1],
+                    "place_name": self._fix_name(row[1]),
                     "num_all": self.int_or_none(numbers[1]),
                     "num_free": self.int_or_none(numbers[0]),
                 })
 
         return parking_places
 
+    def transform_snapshot_data(self, data):
+        return super().transform_snapshot_data(self._fix_data(data))
 
+    def transform_meta_data(self, data):
+        return super().transform_snapshot_data(self._fix_data(data))
+
+    def _fix_name(self, name):
+        if name.startswith("Coulinstra"):
+            return "Coulinstrasse"
+        return name
+
+    def _fix_data(self, data):
+        data = deepcopy(data)
+        for place in data:
+            place["place_name"] = self._fix_name(place["place_name"])
+        return data
