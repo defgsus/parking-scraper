@@ -58,11 +58,12 @@ class Storage:
         with open(long_filename, "w") as fp:
             json.dump(data, fp, indent=1)
 
-    def find_files(self, source_id, min_timestamp=None, type="snapshot"):
+    def find_files(self, source_id, min_timestamp=None, max_timestamp=None, type="snapshot"):
         """
         Find all snapshot files for the given source
         :param source_id: str, id of source
         :param min_timestamp: datetime, optional lower limit on timestamps
+        :param max_timestamp: datetime, optional upper limit on timestamps
         :param type: str, snapshot/meta/error
         :return: list of dict, sorted by timestamp
         {
@@ -77,21 +78,23 @@ class Storage:
                 if file.endswith(".json"):
                     timestamp = self.filename_to_timestamp(file)
                     if not min_timestamp or timestamp >= min_timestamp:
-                        ret_files.append({
-                            "filename": os.path.join(root, file),
-                            "timestamp": timestamp,
-                        })
+                        if not max_timestamp or timestamp <= max_timestamp:
+                            ret_files.append({
+                                "filename": os.path.join(root, file),
+                                "timestamp": timestamp,
+                            })
 
         ret_files.sort(key=lambda f: f["timestamp"])
         return ret_files
 
-    def load_files(self, source_id, min_timestamp=None, type="snapshot"):
+    def load_files(self, source_id, min_timestamp=None, max_timestamp=None, type="snapshot"):
         """
         Load all snapshot files for the given source.
         Will remove snapshots that can not be loaded / json-parsed.
 
         :param source_id: str, id of source
         :param min_timestamp: datetime, optional lower limit on timestamps
+        :param max_timestamp: datetime, optional upper limit on timestamps
         :return: list of dict
         {
             "timestamp": datetime   # timestamp of data retrieval
@@ -99,7 +102,7 @@ class Storage:
             "data": list            # actual data content of snapshot
         }
         """
-        files = self.find_files(source_id, min_timestamp=min_timestamp, type=type)
+        files = self.find_files(source_id, min_timestamp=min_timestamp, max_timestamp=max_timestamp, type=type)
         out_files = []
 
         for file in files:
@@ -127,7 +130,7 @@ class Storage:
             return json.load(fp)
         # TODO might return the latest 'valid' data here
 
-    def load_sources(self, sources, min_timestamp=None):
+    def load_sources(self, sources, min_timestamp=None, max_timestamp=None):
         from .DataSource import DataSources
 
         place_id_to_timestamps = dict()
@@ -135,7 +138,7 @@ class Storage:
         for attributes in tqdm.tqdm(sources.sources):
             source_id = attributes["source_id"]
 
-            files = self.load_files(source_id, min_timestamp=min_timestamp)
+            files = self.load_files(source_id, min_timestamp=min_timestamp, max_timestamp=max_timestamp)
             data_source = DataSources.create(source_id)
 
             for file in files:
@@ -167,7 +170,7 @@ class Storage:
 
         return place_id_to_timestamps
 
-    def load_sources_meta(self, sources, min_timestamp=None):
+    def load_sources_meta(self, sources, min_timestamp=None, max_timestamp=None):
         from .DataSource import DataSources
 
         source_id_to_meta = dict()
@@ -183,7 +186,7 @@ class Storage:
                 canonical_data = data_source.transform_meta_data(meta_data)
                 data_source._make_places_complete(canonical_data["places"].values())
             else:
-                snapshot_files = self.find_files(source_id, min_timestamp)
+                snapshot_files = self.find_files(source_id, min_timestamp=min_timestamp, max_timestamp=max_timestamp)
                 if not snapshot_files:
                     raise AssertionError("No meta-data and no snapshot-data stored")
                 with open(snapshot_files[-1]["filename"]) as fp:
@@ -199,8 +202,8 @@ class Storage:
 
         return source_id_to_meta
 
-    def load_sources_arrays(self, sources, min_timestamp=None):
-        place_timestamps = self.load_sources(sources, min_timestamp=min_timestamp)
+    def load_sources_arrays(self, sources, min_timestamp=None, max_timestamp=None):
+        place_timestamps = self.load_sources(sources, min_timestamp=min_timestamp, max_timestamp=max_timestamp)
         place_list = []
         for place_id in sorted(place_timestamps):
             timestamps = place_timestamps[place_id]

@@ -3,10 +3,12 @@ import json
 import datetime
 import traceback
 import csv
+import os
 from io import StringIO
 from multiprocessing import Pool
 from functools import partial
 import numpy as np
+from copy import deepcopy
 
 import tqdm
 
@@ -42,6 +44,10 @@ def parse_args():
     parser.add_argument(
         "-id", "--include-id", type=str, nargs="+",
         help="regex to match place_ids - filters output of load, load-stats, ..",
+    )
+    parser.add_argument(
+        "-d", "--date", type=str,
+        help="'yesterday'",
     )
     parser.add_argument(
         "-f", "--format", type=str, default="text",
@@ -146,9 +152,83 @@ def dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=None, f
     elif format == "json":
         print(to_json(filtered_data))
 
-    #elif format == "influxdb":
-    #    influx_data = convert_place_id_to_timestamps_to_influx(place_id_to_timestamps)
-    #    print(to_json(influx_data))
+    elif format == "csv":
+        io = StringIO()
+        writer = csv.DictWriter(io, fieldnames=("place_id", "timestamp", "num_free"))
+        writer.writeheader()
+        for place_id in sorted(filtered_data):
+            for ts in sorted(place_id_to_timestamps[place_id], key=lambda v: v["timestamp"]):
+                ts = deepcopy(ts)
+                ts["place_id"] = place_id
+                writer.writerow(ts)
+        io.seek(0)
+        print(io.read())
+
+
+def export_place_id_to_timestamps_csv_multifile(place_id_to_timestamps, place_id_filters=None, format="text"):
+    filtered_data = dict()
+    for place_id in sorted(place_id_to_timestamps):
+        if place_id_filters and not place_id_filters.matches(place_id):
+            continue
+        filtered_data[place_id] = place_id_to_timestamps[place_id]
+
+    export_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "csv-export"))
+    if not os.path.exists(export_path):
+        os.makedirs(export_path)
+
+    for place_id in sorted(filtered_data):
+        with open(os.path.join(export_path, f"{place_id}.csv"), "w") as fp:
+            writer = csv.DictWriter(fp, fieldnames=("timestamp", "num_free"))
+            writer.writeheader()
+            last_value = "XYZ"
+            for ts in sorted(place_id_to_timestamps[place_id], key=lambda v: v["timestamp"]):
+                if ts["num_free"] != last_value:
+                    writer.writerow(ts)
+                last_value = ts["num_free"]
+
+
+def export_place_id_to_timestamps_csv(place_id_to_timestamps, min_date, place_id_filters=None):
+    filtered_data = dict()
+    for place_id in sorted(place_id_to_timestamps):
+        if place_id_filters and not place_id_filters.matches(place_id):
+            continue
+        filtered_data[place_id] = place_id_to_timestamps[place_id]
+
+    export_path = os.path.abspath(os.path.join(
+        os.path.dirname(__file__),
+        "csv-export",
+        min_date.strftime("%Y"),
+        min_date.strftime("%Y-%m"),
+    ))
+    if not os.path.exists(export_path):
+        os.makedirs(export_path)
+
+    timestamp_dict = dict()
+    for place_id in sorted(filtered_data):
+        last_value = "XYZ"
+        for ts in place_id_to_timestamps[place_id]:
+            if ts["num_free"] != last_value:
+                key = ts["timestamp"].isoformat()
+                if key not in timestamp_dict:
+                    timestamp_dict[key] = {"timestamp": key}
+                timestamp_dict[key][place_id] = ts["num_free"]
+            last_value = ts["num_free"]
+
+    timestamp_rows = [
+        timestamp_dict[ts]
+        for ts in sorted(timestamp_dict)
+    ]
+    filename = os.path.join(export_path, min_date.strftime("%Y-%m-%d.csv"))
+
+    if timestamp_rows:
+        print(f"exporting timestamps {timestamp_rows[0]['timestamp']} - {timestamp_rows[-1]['timestamp']} to {filename}")
+    else:
+        print(f"exporting emptry csv to {filename}")
+
+    with open(filename, "w") as fp:
+        writer = csv.DictWriter(fp, fieldnames=["timestamp"] + list(filtered_data))
+        writer.writeheader()
+        writer.writerows(timestamp_rows)
 
 
 def dump_source_to_meta(source_id_to_meta, format="text"):
@@ -228,6 +308,28 @@ def convert_place_id_to_timestamps_to_influx(place_id_to_timestamps, source_id_t
                     }
                 })
     return influx_data
+
+
+def convert_place_id_to_timestamps_to_export(place_id_to_timestamps, source_id_to_meta, place_id_filters):
+    place_id_lookup = dict()
+    for source_meta in source_id_to_meta.values():
+        for place in source_meta["places"].values():
+            place_id_lookup[place["place_id"]] = place
+
+    ret_places = []
+    for place_id, timestamps in place_id_to_timestamps.items():
+        if place_id_filters and not place_id_filters.matches(place_id):
+            continue
+
+        place_export = deepcopy(place_id_lookup[place_id])
+        ret_places.append(place_export)
+        place_export["timestamps"] = []
+
+        for timestamp in timestamps:
+            if timestamp["num_free"] is not None:
+                place_export["timestamps"].append(timestamp)
+
+    return ret_places
 
 
 def dump_stats(place_arrays, place_id_filters=None, format="text"):
@@ -313,6 +415,21 @@ def main():
         print("No data sources matching the filter")
         exit(1)
 
+    min_date, max_date = None, None
+
+    try:
+        min_date = datetime.datetime.strptime(args.date, "%Y-%m-%d")
+    except ValueError:
+        if args.date == "yesterday":
+            min_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            min_date -= datetime.timedelta(days=1)
+        else:
+            print(f"Invalid date '{args.date}'")
+            exit(2)
+
+    if min_date:
+        max_date = min_date + datetime.timedelta(days=1) - datetime.timedelta(seconds=1)
+
     place_id_filters = args.include_id
     if place_id_filters:
         place_id_filters = RegexFilter(*place_id_filters)
@@ -338,19 +455,29 @@ def main():
         download_sources(sources, use_cache=args.cache, do_store=True, meta=True)
 
     elif args.command == "load":
-        place_id_to_timestamps = Storage().load_sources(sources)
+        place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date, max_timestamp=max_date)
         dump_place_id_to_timestamps(place_id_to_timestamps, place_id_filters=place_id_filters, format=args.format)
 
     elif args.command == "load-meta":
-        source_id_to_meta = Storage().load_sources_meta(sources)
+        source_id_to_meta = Storage().load_sources_meta(sources, min_timestamp=min_date, max_timestamp=max_date)
         dump_source_to_meta(source_id_to_meta, format=args.format)
 
     elif args.command == "load-stats":
-        place_arrays = Storage().load_sources_arrays(sources)
+        place_arrays = Storage().load_sources_arrays(sources, min_timestamp=min_date, max_timestamp=max_date)
         dump_stats(place_arrays, place_id_filters=place_id_filters, format=args.format)
 
+    elif args.command == "export-csv":
+        place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date, max_timestamp=max_date)
+        export_place_id_to_timestamps_csv(place_id_to_timestamps, min_date, place_id_filters=place_id_filters)
+
+    elif args.command == "export":
+        place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date, max_timestamp=max_date)
+        source_id_to_meta = Storage().load_sources_meta(sources)
+        data = convert_place_id_to_timestamps_to_export(place_id_to_timestamps, source_id_to_meta, place_id_filters=place_id_filters)
+        print(to_json(data, indent=2))
+
     elif args.command == "to-influxdb":
-        place_id_to_timestamps = Storage().load_sources(sources)
+        place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date)
         source_id_to_meta = Storage().load_sources_meta(sources)
         export_place_id_to_timestamps_influx(place_id_to_timestamps, source_id_to_meta, place_id_filters=place_id_filters)
 
