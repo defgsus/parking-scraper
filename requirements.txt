@@ -1,7 +1,8 @@
+pytz
 lxml>=4.5.0
 beautifulsoup4>=4.8.2
 requests>=2.23.0
 xmljson>=0.2.0
 tqdm>=4.43.0
 numpy>=1.18.2
-influxdb>=5.2.3
+# influxdb>=5.2.3

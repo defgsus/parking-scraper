@@ -176,27 +176,31 @@ class Storage:
         source_id_to_meta = dict()
 
         for attributes in tqdm.tqdm(sources.sources):
-            source_id = attributes["source_id"]
+            try:
+                source_id = attributes["source_id"]
 
-            data_source = DataSources.create(source_id)
+                data_source = DataSources.create(source_id)
 
-            meta_data = self.load_meta(source_id)
+                meta_data = self.load_meta(source_id)
 
-            if meta_data:
-                canonical_data = data_source.transform_meta_data(meta_data)
-                data_source._make_places_complete(canonical_data["places"].values())
-            else:
-                snapshot_files = self.find_files(source_id, min_timestamp=min_timestamp, max_timestamp=max_timestamp)
-                if not snapshot_files:
-                    raise AssertionError("No meta-data and no snapshot-data stored")
-                with open(snapshot_files[-1]["filename"]) as fp:
-                    meta_data = json.load(fp)
+                if meta_data:
                     canonical_data = data_source.transform_meta_data(meta_data)
                     data_source._make_places_complete(canonical_data["places"].values())
+                else:
+                    snapshot_files = self.find_files(source_id, min_timestamp=min_timestamp, max_timestamp=max_timestamp)
+                    if not snapshot_files:
+                        raise AssertionError("No meta-data and no snapshot-data stored")
+                    with open(snapshot_files[-1]["filename"]) as fp:
+                        meta_data = json.load(fp)
+                        canonical_data = data_source.transform_meta_data(meta_data)
+                        data_source._make_places_complete(canonical_data["places"].values())
 
-            if not canonical_data["places"]:
-                raise AssertionError(f"No places in meta-data for {source_id} "
-                                     f"({data_source.__class__.__name__}.transform_meta_data)")
+                if not canonical_data["places"]:
+                    raise AssertionError(f"No places in meta-data for {source_id} "
+                                         f"({data_source.__class__.__name__}.transform_meta_data)")
+            except BaseException:
+                print(f"ERROR in source {attributes['source_id']}")
+                raise
 
             source_id_to_meta[source_id] = canonical_data
 
