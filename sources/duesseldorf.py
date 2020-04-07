@@ -75,7 +75,7 @@ class ParkingDuesseldorf(DataSource):
                 if coords:
                     coords = coords["{http://www.opengis.net/gml}pos"].split()
                     # TODO: need to convert to lat/lon
-                    coordinates = [float(x) for x in coords]
+                    # coordinates = [float(x) for x in coords]
 
             parking_places.append({
                 "place_name": place_name,
