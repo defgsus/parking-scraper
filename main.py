@@ -32,6 +32,8 @@ def parse_args():
         load-stats: load snapshots from disk and print stats
         export: print complete json data of meta and snapshots - also tests if all timestamp places are in meta data
         export-csv: export timestamp csv file to --csv-path - export timezone is UTC
+            if used with --date, export single day 
+            otherwise export everything until UTC yesterday that is not already exported in --csv-path
         to-influx: load snapshots and export to influx
         """
     )
@@ -255,8 +257,8 @@ def dump_source_to_meta(source_id_to_meta, format="text"):
         print(to_json(source_id_to_meta, indent=2))
 
     elif format == "csv":
-        keys = ["city_name", "place_name", "num_all", "address", "coordinates", "place_id", "place_url", "source_id",
-                "source_web_url"]
+        keys = ["place_id", "place_name", "city_name", "num_all", "address", "latitude", "longitude",
+                "place_url", "source_id", "source_web_url"]
 
         rows = []
         for source_meta in source_id_to_meta.values():
@@ -265,7 +267,12 @@ def dump_source_to_meta(source_id_to_meta, format="text"):
                 if place["address"]:
                     place["address"] = "\n".join(place["address"])
                 if place["coordinates"]:
-                    place["coordinates"] = "%s, %s" % tuple(place["coordinates"])
+                    place["latitude"] = place["coordinates"][0]
+                    place["longitude"] = place["coordinates"][1]
+                place.pop("coordinates", None)
+                place["source_id"] = source_meta["source_id"]
+                place["source_web_url"] = source_meta["source_web_url"]
+
                 rows.append(place)
 
         with StringIO() as fp:
@@ -415,6 +422,43 @@ def dump_stats(place_arrays, place_id_filters=None, format="text"):
             print(fp.read())
 
 
+def export_csv(sources, min_date, max_date, place_id_filters, csv_path):
+    if min_date:
+        min_date = from_utc(min_date)
+        max_date = from_utc(max_date)
+
+        place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date, max_timestamp=max_date)
+        export_place_id_to_timestamps_csv(place_id_to_timestamps, min_date, csv_path, place_id_filters=place_id_filters)
+
+    else:
+        existing_dates = set()
+        for root, dirs, files in os.walk(csv_path):
+            for fn in files:
+                if fn.endswith(".csv"):
+                    try:
+                        existing_dates.add(
+                            datetime.datetime.strptime(fn[:10], "%Y-%m-%d").date()
+                        )
+                    except ValueError:
+                        pass
+
+        yesterday = to_utc(datetime.datetime.now() - datetime.timedelta(days=1)).date()
+        current_date = datetime.date(2020, 3, 24)  # my earliest records
+        print(f"exporting {current_date} - {yesterday}")
+        print(f"already existing: {existing_dates}")
+
+        while current_date <= yesterday:
+            if current_date not in existing_dates:
+                min_date = datetime.datetime(current_date.year, current_date.month, current_date.day)
+                max_date = min_date + datetime.timedelta(days=1) - datetime.timedelta(seconds=1)
+
+                place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date, max_timestamp=max_date)
+                export_place_id_to_timestamps_csv(
+                    place_id_to_timestamps, min_date, csv_path, place_id_filters=place_id_filters
+                )
+            current_date += datetime.timedelta(days=1)
+
+
 def main():
 
     args = parse_args()
@@ -487,11 +531,7 @@ def main():
         dump_stats(place_arrays, place_id_filters=place_id_filters, format=args.format)
 
     elif args.command == "export-csv":
-        if min_date:
-            min_date = from_utc(min_date)
-            max_date = from_utc(max_date)
-        place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date, max_timestamp=max_date)
-        export_place_id_to_timestamps_csv(place_id_to_timestamps, min_date, args.csv_path, place_id_filters=place_id_filters)
+        export_csv(sources, min_date, max_date, place_id_filters, args.csv_path)
 
     elif args.command == "export":
         place_id_to_timestamps = Storage().load_sources(sources, min_timestamp=min_date, max_timestamp=max_date)
