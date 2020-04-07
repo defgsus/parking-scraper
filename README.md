@@ -4,6 +4,8 @@ to build an historical archive!
 
 ![sample curve](./sample-curve.png)
 
+The archived numbers can be found in the [parking-data](https://github.com/defgsus/parking-data) repository.
+
 This is just a simple scraper. It takes web-sites or api endpoints and collects json-compatible data
 which is then stored to json files with the filename being the timestamp. 
 
