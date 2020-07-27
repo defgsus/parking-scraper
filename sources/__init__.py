@@ -18,6 +18,7 @@ from .hanau import ParkingHanau
 # from .heidelberg import ParkingHeidelberg
 from .heilbronn import ParkingHeilbronn
 from .ingolstadt import ParkingIngolstadt
+from .jena import ParkingJena
 from .karlsruhe import ParkingKarlsruhe
 from .kiel import ParkingKiel
 from .koeln import ParkingKoeln
