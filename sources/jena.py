@@ -16,6 +16,8 @@ class ParkingJena(DataSource):
         parking_places = []
 
         div = soup.find("div", {"class": "view-parking-areas"})
+        if not div:
+            div = soup.find("div", {"class": "view-list-parkplaetze"})
         for tr in div.find("table").find_all("tr"):
             row = [td.text.strip() for td in tr.find_all("td")]
 
@@ -25,6 +27,6 @@ class ParkingJena(DataSource):
                     "num_free": self.int_or_none(row[1]),
                     "num_all": self.int_or_none(row[2]),
                 })
-
+        print("HALLO", parking_places)
         return parking_places
 
