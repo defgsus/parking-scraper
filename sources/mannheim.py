@@ -15,15 +15,18 @@ class ParkingMannheim(DataSource):
 
         parking_places = []
 
-        div = soup.find("div", {"id": "parkhausliste-ct"})
-        div = div.find("div")
-        for a in div.find_all("a"):
-            row = [d.text.strip() for d in a.parent.parent.find_all("div")]
-            
-            parking_places.append({
-                "place_name": row[0],
-                "num_free": self.int_or_none(row[1]),
-            })
+        for div in soup.find_all("div", {"id": "parkhausliste-ct"}):
+            div = div.find("div")
+            if not div:
+                continue
+
+            for a in div.find_all("a"):
+                row = [d.text.strip() for d in a.parent.parent.find_all("div")]
+
+                parking_places.append({
+                    "place_name": row[0],
+                    "num_free": self.int_or_none(row[1]),
+                })
 
         return parking_places
 
