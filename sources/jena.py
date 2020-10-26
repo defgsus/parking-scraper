@@ -27,6 +27,6 @@ class ParkingJena(DataSource):
                     "num_free": self.int_or_none(row[1]),
                     "num_all": self.int_or_none(row[2]),
                 })
-        print("HALLO", parking_places)
+
         return parking_places
 
