@@ -17,6 +17,11 @@ class ParkingTrier(DataSource):
 
     def transform_snapshot_data(self, data):
         ret_data = []
+        
+        # fix api-bug on 2020-10-07T00:15:01
+        if isinstance(data, dict):
+            data = [data]
+
         for entry in data:
             ret_data.append({
                 "place_id": self.place_name_to_id(entry["phname"]),
