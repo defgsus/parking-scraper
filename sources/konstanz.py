@@ -17,11 +17,11 @@ class ParkingKonstanz(DataSource):
 
         for tr in soup.find_all("tr"):
             row = [td.text.strip() for td in tr.find_all("td")]
-            if len(row) == 3 and row[0] == "":
-
+            if len(row) == 2 and row[0] != "Parkmöglichkeit":
+                print(row)
                 parking_places.append({
-                    "place_name": row[1],
-                    "num_free": self.int_or_none(row[2]),
+                    "place_name": row[0],
+                    "num_free": self.int_or_none(row[1]),
                 })
 
         return parking_places
