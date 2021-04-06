@@ -165,7 +165,10 @@ class DataSource:
     @staticmethod
     def int_or_none(x):
         try:
-            return int(str(x).lstrip("0"))
+            x = str(x)
+            if len(x) > 1:
+                x = x.lstrip("0")
+            return int(x)
         except (ValueError, TypeError):
             return None
 
