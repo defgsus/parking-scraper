@@ -15,13 +15,13 @@ class ParkingPotsdam(DataSource):
 
         parking_places = []
 
-        for div in soup.find_all("div", {"class": "parken_sektion"}):
-            table = div.find("table")
+        for table in soup.find_all("table", {"class": "parking"}):
             for tr in table.find_all("tr"):
-                row = [td.text.strip() for td in tr.find_all("td")]
+                row = [td.text.strip() for td in tr.children]
+                if not row:
+                    continue
 
                 if row[0] != "Füllstand":
-
                     parking_places.append({
                         "place_name": row[1][:len(row[1]) // 2],
                         "num_free": self.int_or_none(row[2]),
