@@ -132,7 +132,8 @@ class DataSource:
                     text = response.content.decode(encoding)
                 break
             except requests.ConnectionError:
-                pass
+                if try_num == 2:
+                    raise
 
         if self.use_cache:
             if not os.path.exists(self.cache_dir):
