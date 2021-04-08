@@ -9,8 +9,12 @@ The archived numbers can be found in the [parking-data](https://github.com/defgs
 This is just a simple scraper. It takes web-sites or api endpoints and collects json-compatible data
 which is then stored to json files with the filename being the timestamp. 
 
+There is a [small article](https://defgsus.github.io/blog/2021/04/08/one-year-parking.html)
+written after one year of scraping.
+
 
 ## Run
+
 ```shell script
 python main.py store
 ```
@@ -49,10 +53,10 @@ through `util.Storage` and `util.DataSources` (see `./notebooks/`). or via
 python main.py load
 ```
 
-### cron
+### To run as cron-job
 
-Use `crontab -e` and something like
+type `crontab -e` and add something like
 
 ```crontab
-*/15 * * * * /bin/sh -c 'cd /opt/parking-scraper && ./env/bin/python main.py store'
+*/15 * * * * /bin/sh -c 'cd /path/to/parking-scraper && ./env/bin/python main.py store'
 ```
